@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { appDB } from '@/lib/database';
-import { connectToDatabase } from '@/helpers/server-helper';
 
-export const POST = async (req: NextRequest, res: NextResponse) => {
+// import { appDB } from '@/lib/database';
+import { connectToDatabase } from '@/helpers/server-helper';
+import appDB from '@/lib/database';
+
+export async function POST(req: NextRequest, res: NextResponse) {
     try {
         const { name, email, mobile, password } = await req.json();
         // console.log(name, email, mobile, password);
@@ -15,18 +17,26 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
             }, { status: 422 });
         }
 
+
         await connectToDatabase();
+        connectToDatabase().catch(err => {
+            console.error('Error during database connection:', err);
+        });
 
         const newUser = await appDB.user.create({
             data: {
-                name: name,
-                email: email,
-                mobile: mobile,
-                password: password
+                // name: name,
+                // email: email,
+                // mobile: mobile,
+                // password: password
+                "name": "New Name 1",
+                "email": "nesml5@example.com",
+                "mobile": "0197654321",
+                "password": "123456"
             },
         });
 
-        // console.log(newUser);
+        console.log(newUser);
 
 
         return NextResponse.json({
