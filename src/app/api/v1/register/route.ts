@@ -18,23 +18,12 @@ export async function POST(req: NextRequest, res: NextResponse) {
         }
 
 
-        await connectToDatabase();
-        connectToDatabase().catch(err => {
-            console.error('Error during database connection:', err);
-        });
+        // await connectToDatabase();
+        // connectToDatabase().catch(err => {
+        //     console.error('Error during database connection:', err);
+        // });
 
-        const newUser = await appDB.user.create({
-            data: {
-                // name: name,
-                // email: email,
-                // mobile: mobile,
-                // password: password
-                "name": "New Name 1",
-                "email": "nesml5@example.com",
-                "mobile": "0197654321",
-                "password": "123456"
-            },
-        });
+        const newUser = await appDB.user.create({ data: { name, email, mobile, password } });
 
         console.log(newUser);
 
@@ -54,7 +43,5 @@ export async function POST(req: NextRequest, res: NextResponse) {
             error: error.message || "Internal server error",
         }, { status: 500 });
 
-    } finally {
-        // appDB.$disconnect();
     }
 }
