@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import { ThemeProvider } from '@/helpers/provider';
 import { Analytics } from '@vercel/analytics/react';
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+import { ThemeProvider } from '@/helpers/theme-provider';
+import { FontBarlow, FontInter, FontPoppins, FontRoboto } from '@/helpers/fonts';
+
+
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
+      <body className={`${FontInter.variable} ${FontRoboto.variable} ${FontPoppins.variable} ${FontBarlow.variable}`} suppressHydrationWarning>
         <ThemeProvider defaultTheme={"dark"} attribute="class" enableSystem={true}>
           {children}
         </ThemeProvider>
