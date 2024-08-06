@@ -38,7 +38,7 @@ next-env.d.ts
 .vscode/symbols.json
 
 
-package.json
+package.lock.json
 yarn.lock
 .vscode/*
 prisma/schema.prisma
