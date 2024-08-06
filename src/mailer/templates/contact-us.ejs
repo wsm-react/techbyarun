@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%- include('./partials/header.ejs') %>
+<title><%= title %></title>
+</head>
+<body style=" margin:0; padding:0;">
+    <div style="background-color:#f0f1f3;font-family:'Helvetica Neue','Segoe UI',Helvetica,sans-serif;font-size:15px;line-height:24px;margin:0;color:#444">
+    <div style="padding:15px">&nbsp;</div>
+    <div style="padding:0px; max-width:568px; margin:0 auto; text-align: center;">
+      <div style="margin-bottom:35px"><a href="<%= dominurl %>" target="_blank"><img style="max-width:240px" src="<%= dominurl %>_next/image?url=%2Flogo-dark.png&w=640&q=20" alt="<%= dominname %>"></a></div>
+    </div>
+    <div style="background-color:#fff; padding:0px; max-width:568px; margin:0 auto; border-radius:20px;">
+      <div style="padding:40px;">
+        <div>
+          <h4 style="margin: 0; padding: 0;">Dear <%= name %>,</h4>
+          <p>We have received your details and noted your call preference. Here are the details you provided:</p>
+          <ul style="margin: 0; padding: 0; padding-left: 10px; margin-top: 30px; margin-bottom: 30px;">
+            <li><strong>Name : </strong><%= name %></li>
+            <li><strong>Email : </strong><%= email %></li>
+            <li><strong>Mobile No : </strong><%= mobile %></li>
+          </ul>
+          <p>Thank you for providing your information. We will be in touch with you shortly.</p>
+          <br>
+          <p> <b>Regards</b><br> Team <%= dominname %></p>
+        </div>
+      </div>
+    </div>
+    <%- include('./partials/footer.ejs') %>
+    </div>
+</body>
+</html>
