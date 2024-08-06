@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  // previewFeatures = ["mongodb"] // Uncomment if you use a preview feature that requires it
+}
+
+model User {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  name      String?
+  email     String     @unique
+  password  String
+  mobile    String?
+  posts     BlogPost[]
+  leads     Leads[]
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+}
+
+model BlogPost {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  slug      String    @unique // Unique constraint creates a unique index
+  title     String
+  subTitle  String?   @map("sub_title")
+  body      String
+  published Boolean
+  authorId  String    @map("author_id") @db.ObjectId
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  author    User      @relation(fields: [authorId], references: [id])
+  comments  Comment[]
+  // Custom index on title is added for optimization, as slug is unique
+  @@index([id, slug])
+}
+
+model Leads {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String
+  name      String?
+  mobile    String
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  loginTime DateTime @default(now())
+  userId    String   @map("user_id") @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Comment {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  comment String
+  post    BlogPost @relation(fields: [postId], references: [id])
+  postId  String   @db.ObjectId
+}
+
+model ContectUs {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  firstName   String   @map("first_name")
+  lastName   String?  @map("last_name")
+  phone      String
+  email      String   @unique
+  subject    String?
+  message    String?
+  lookingFor String?   @map("looking_for")
+  budget     String?
+  dueDate    DateTime? @map("due_date")
+  address    Address?
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+}
+
+type Address {
+  street String
+  city   String
+  state  String
+  zip    String
+}

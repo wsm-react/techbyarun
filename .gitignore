@@ -37,11 +37,10 @@ next-env.d.ts
 .vscode/settings.json
 .vscode/symbols.json
 
-
+# .env
 package.lock.json
 yarn.lock
 .vscode/*
-prisma/schema.prisma
 prisma/migrations/*
 prisma/migrations/*
 prisma/migrations/*
