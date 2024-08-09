@@ -1,3 +1,4 @@
+import StairAnimataionLoader from '@/components/custom-ui/animation/page-stairs';
 import { Fragment } from 'react';
 // import AppFooter from '@/components/custom-ui/app-footer';
 
@@ -5,6 +6,7 @@ export default function PageScreenLayout({ children }: Readonly<{ children: Reac
   return (
     <Fragment>
       {children}
+      <StairAnimataionLoader />
       {/* <AppFooter /> */}
     </Fragment>
   );
