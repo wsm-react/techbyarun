@@ -23,7 +23,7 @@ export type CareerPayload = {
     expectedCTC: number;
     joinImmediately: string;
     resume: string;
-    comment: string;
+    bio: string;
     portfolio?: string;
 };
 

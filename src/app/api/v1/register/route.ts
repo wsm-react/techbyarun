@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // import { appDB } from '@/lib/database';
-import { connectToDatabase } from '@/helpers/server-helper';
 import appDB from '@/lib/database';
 
 export async function POST(req: NextRequest, res: NextResponse) {

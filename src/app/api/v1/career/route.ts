@@ -66,8 +66,9 @@ export async function POST(req: NextRequest, res: NextResponse) {
         return NextResponse.json({ ...newLead, success: true, status: 201, message: 'New lead created for new user.', }, { status: 201 });
 
     } catch (error: any) {
-        // console.log(error);
         if (error instanceof errors.E_VALIDATION_ERROR) {
+            console.log("error.status ", error.status);
+
             return NextResponse.json(
                 { success: false, status: error.status, message: error.messages },
                 { status: error.status }

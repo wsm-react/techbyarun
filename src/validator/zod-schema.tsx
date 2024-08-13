@@ -11,11 +11,22 @@ export const CareerFormSchema = z.object({
         // .refine(value => !/\s/.test(value), { message: "Mobile number cannot contain spaces" })
         // .refine(value => /^\d+$/.test(value), { message: "Mobile number must contain only digits" })
         .refine(value => value.length === 10, { message: "Mobile number must be exactly 10 digits" }),
-
     email: z.string()
         .trim()
         .min(1, { message: "This field has to be filled." })
         .email("This is not a valid email."),
+
+    title: z.string(),
+    slug: z.string().trim(),
+    company: z.string(),
+    workType: z.string().optional(),
+    experience: z.number().nullable().default(null),
+    currentCTC: z.number().nullable().default(null),
+    expectedCTC: z.number().nullable().default(null),
+    joinImmediately: z.string(),
+    bio: z.string().optional(),
+    resume: z.string().url({ message: "Invalid url" }),
+    portfolio: z.string().url({ message: "Invalid url" }),
 
     // terms: z.boolean().refine(val => val === true, { message: "You must accept the terms and conditions" })
     terms: z.coerce.boolean().refine(val => val === true, { message: "You must accept the terms and conditions" }),

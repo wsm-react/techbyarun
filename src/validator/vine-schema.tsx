@@ -62,9 +62,7 @@ export const ApiCareerSchema = vine.object({
     currentCTC: vine.number().positive(),
     expectedCTC: vine.number().positive(),
     joinImmediately: vine.string(),
-    comment: vine.string().optional(),
-    // resume: vine.string().url({ require_protocol: true, protocols: ['http', 'https', 'ftp'] }),
-    // portfolio: vine.string().url({ require_protocol: true, protocols: ['http', 'https', 'ftp'] }),
+    bio: vine.string().optional(),
     resume: vine.string().url({ require_protocol: true, protocols: ['http', 'https', 'ftp'] }),
     portfolio: vine.string().activeUrl(),
 });

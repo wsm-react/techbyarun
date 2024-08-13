@@ -7,18 +7,18 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useState } from 'react'
 
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from "@/components/ui/button"
 import { CareerType, CareerFormSchema } from '@/validator/zod-schema'
-
-// import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
-// import { CareerType, CareerFormSchema } from '@/_lib/form-schema/validate-schema'
+import { ResultType } from '@/types/app-interface'
+import { Textarea } from '../ui/textarea'
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@radix-ui/react-select'
 
 
 export function FormCareer() {
-    const [result, setResult] = useState<Record<string, any> | null>(null); // Declare result state
+    const [result, setResult] = useState<ResultType | null>(null); // Declare result state
     const [error, setError] = useState<string | null>(null); // Declare error state
     const [loading, setLoading] = useState<boolean>(false); // State for loading
     const router = useRouter(); // Initialize useRouter
@@ -30,6 +30,14 @@ export function FormCareer() {
             name: "",
             mobile: "",
             email: "",
+            title: "",
+            slug: "",
+            company: "",
+            joinImmediately: "",
+            resume: "",
+            portfolio: "",
+            workType: "",
+            bio: "",
             terms: true,
         },
         mode: 'onChange',
@@ -43,9 +51,9 @@ export function FormCareer() {
             // console.log('Form submitted:', data);
 
             const baseUrl = `${window.location.protocol}//${window.location.host}`;
-            const apiUrl = `${baseUrl}/api/v1/leads`;
+            const apiUrl = `${baseUrl}/api/v1/career`;
 
-            // console.log('API URL:', apiUrl);
+            console.log('API URL:', apiUrl);
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -56,6 +64,9 @@ export function FormCareer() {
             });
 
             const responseData = await response.json();
+
+            console.log("responseData", responseData);
+
 
             if (!response.ok) {
                 // Handle non-OK responses
@@ -71,17 +82,19 @@ export function FormCareer() {
                 // Redirect to a success page
                 // console.log(responseData.email);
 
-                if (responseData.mailsent === true) {
-                    router.push('/success');
-                } else {
-                    setError(responseData.mailresponse as string);
-                }
+                // if (responseData.mailsent === true) {
+                //     // router.push('/success');
+                // } else {
+                //     setError(responseData.mailresponse as string);
+                // }
 
             } else {
                 // Set the result to display if status is not 200
                 setResult(responseData);
                 setError(null); // Clear any previous errors
             }
+
+            // setResult(responseData);
 
         } catch (err) {
             // Handle unexpected errors
@@ -94,47 +107,37 @@ export function FormCareer() {
         }
     };
 
+    const StatusMessage = ({ status, icon: Icon, title, message }: { status: number, icon: React.ComponentType<any>, title: string, message: Record<string, any> }) => (
+        <div className={`status-message-${status}`}>
+            <Icon className="h-6 w-6" />
+            <div>{title}</div>
+            <ul>
+                {Object.entries(message).map(([key, value]) => (
+                    <li key={key}>
+                        <strong>{key}:</strong> {String(value)}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+
 
     const renderContentBasedOnStatus = () => {
         if (result) {
-            const { status, name, message } = result;
+            const { status, message } = result;
 
             switch (status) {
                 case 200:
-                    return (
-                        <div className='text-green-600 border-green-500'>
-                            <CircleCheckBig className="h-6 w-6 text-green-600" />
-                            <div>Success</div>
-                            <div>
-                                Hi {name}, {message}
-                            </div>
-                        </div>
-                    );
                 case 203:
-                    return (
-                        <div className='text-green-600 border-green-500'>
-                            <CircleCheckBig className="h-6 w-6 text-green-600" />
-                            <div>Success</div>
-                            <div>
-                                Hi {name}, {message}
-                            </div>
-                        </div>
-                    );
+                    return <StatusMessage status={status} icon={CircleCheckBig} title="Success" message={message} />;
+                case 422:
+                    return <StatusMessage status={status} icon={TriangleAlert} title="Sorry" message={message} />;
                 case 201:
-                    return (
-                        <div className='dark:text-red-400 dark:border-red-400'>
-                            <TriangleAlert className="h-6 w-6 dark:text-red-400" />
-                            <div className='dark:text-red-400'>Sorry</div>
-                            <div>
-                                Hi {name}, {message}
-                            </div>
-                        </div>
-                    );
+                    return <StatusMessage status={status} icon={TriangleAlert} title="Processing" message={message} />;
                 default:
-                    return;
+                    return null;
             }
         }
-
         return null;
     };
 
@@ -143,8 +146,7 @@ export function FormCareer() {
         <Form {...form}>
             {/* ref={formRef} */}
             <form autoComplete="off" onSubmit={handleSubmit(onSubmitForm)} className="w-1/1 md:w-2/3 md:space-y-7 space-y-5">
-                <FormField
-                    control={form.control}
+                <FormField control={form.control}
                     name="name"
                     render={({ field }) => (
                         <FormItem>
@@ -156,10 +158,8 @@ export function FormCareer() {
                             </FormControl>
                             {errors.name && <FormMessage className='dark:text-red-300'>{errors.name.message}</FormMessage>}
                         </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
+                    )} />
+                <FormField control={form.control}
                     name="mobile"
                     render={({ field }) => (
                         <FormItem>
@@ -170,10 +170,8 @@ export function FormCareer() {
                             </FormControl>
                             {errors.mobile && <FormMessage className='dark:text-red-300'>{errors.mobile.message}</FormMessage>}
                         </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
+                    )} />
+                <FormField control={form.control}
                     name="email"
                     render={({ field }) => (
                         <FormItem>
@@ -183,10 +181,154 @@ export function FormCareer() {
                             </FormControl>
                             {errors.email && <FormMessage className='dark:text-red-300'>{errors.email.message}</FormMessage>}
                         </FormItem>
+                    )} />
+                <FormField control={form.control}
+                    name="company"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Company</FormLabel>
+                            <FormControl>
+                                <Input autoComplete="off" className='h-14 px-6' type='text' placeholder="Enter your company" {...field}
+                                // onInput={handleInput}
+                                />
+                            </FormControl>
+                            {errors.company && <FormMessage className='dark:text-red-300'>{errors.company.message}</FormMessage>}
+                        </FormItem>
+                    )} />
+                <FormField
+                    control={form.control}
+                    name="workType"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Work type</FormLabel>
+                            <FormControl>
+                                <Input autoComplete="off" className='h-14 px-6' type='text' placeholder="Enter your workType" {...field}
+                                // onInput={handleInput}
+                                />
+                            </FormControl>
+                            {errors.workType && <FormMessage className='dark:text-red-300'>{errors.workType.message}</FormMessage>}
+                        </FormItem>
                     )}
                 />
                 <FormField
                     control={form.control}
+                    name="experience"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Experience</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a verified email to display" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    <SelectItem value="m@example.com">m@example.com</SelectItem>
+                                    <SelectItem value="m@google.com">m@google.com</SelectItem>
+                                    <SelectItem value="m@support.com">m@support.com</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            {errors.experience && <FormMessage className='dark:text-red-300'>{errors.experience.message}</FormMessage>}
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="currentCTC"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Current CTC</FormLabel>
+                            <FormControl>
+                                <Input autoComplete="off" className='h-14 px-6' type='number' placeholder="Enter your currentCTC"  {...field}
+                                    value={field.value !== null ? field.value : ''} // Handle null value
+                                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : '')}
+                                />
+                            </FormControl>
+                            {errors.currentCTC && <FormMessage className='dark:text-red-300'>{errors.currentCTC.message}</FormMessage>}
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="expectedCTC"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Expected CTC</FormLabel>
+                            <FormControl>
+                                <Input autoComplete="off" className='h-14 px-6' type='text' placeholder="Enter your expectedCTC" {...field}
+                                    // onInput={handleInput}
+                                    value={field.value !== null ? field.value : ''} // Handle null value
+                                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : '')}
+                                />
+                            </FormControl>
+                            {errors.expectedCTC && <FormMessage className='dark:text-red-300'>{errors.expectedCTC.message}</FormMessage>}
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="joinImmediately"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Join immediately</FormLabel>
+                            <FormControl>
+                                <Input autoComplete="off" className='h-14 px-6' type='text' placeholder="Enter your joinImmediately" {...field}
+                                // onInput={handleInput}
+                                />
+                            </FormControl>
+                            {errors.joinImmediately && <FormMessage className='dark:text-red-300'>{errors.joinImmediately.message}</FormMessage>}
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="bio"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Bio</FormLabel>
+                            <FormControl>
+                                <Textarea autoComplete="off" className='h-14 px-6' placeholder="Enter your bio" {...field}
+                                // onInput={handleInput}
+                                />
+                            </FormControl>
+                            {errors.bio && <FormMessage className='dark:text-red-300'>{errors.bio.message}</FormMessage>}
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="resume"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Upload resume</FormLabel>
+                            <FormControl>
+                                <Input autoComplete="off" className='h-14 px-6' type="file" placeholder="Enter your resume" {...field}
+                                // onInput={handleInput}
+                                />
+                            </FormControl>
+                            <FormDescription>
+                                DOC, DOCX, PDF (2 MB)
+                            </FormDescription>
+                            {errors.resume && <FormMessage className='dark:text-red-300'>{errors.resume.message}</FormMessage>}
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="portfolio"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Portfolio Link</FormLabel>
+                            <FormControl>
+                                <Input autoComplete="off" className='h-14 px-6' type='text' placeholder="as https://linkedin.com/in/yourid/" {...field}
+                                // onInput={handleInput}
+                                />
+                            </FormControl>
+                            {errors.portfolio && <FormMessage className='dark:text-red-300'>{errors.portfolio.message}</FormMessage>}
+                        </FormItem>
+                    )}
+                />
+                <FormField control={form.control}
                     name="terms"
                     render={({ field }) => (
                         <FormItem>
@@ -208,17 +350,19 @@ export function FormCareer() {
                                 {errors.terms && <FormMessage className='mt-5 dark:text-red-300'>{errors.terms.message}</FormMessage>}
                             </div>
                         </FormItem>
-                    )}
-                />
+                    )} />
                 {result && renderContentBasedOnStatus()}
                 {/* Display error */}
                 {error && (
-                    <div className='dark:text-red-300'>
-                        <AlertCircle className="h-4 w-4" />
-                        <div>Error</div>
-                        <div>
-                            {error}
-                        </div>
+                    <div className='mt-4 p-4 rounded-md border border-red-500 text-red-700 bg-red-50 dark:bg-red-900 dark:border-red-600 dark:text-red-400'>
+                        <AlertCircle className="inline h-5 w-5 mr-2" />
+                        <ul>
+                            {Object.entries(error).map(([key, value]) => (
+                                <li key={key}>
+                                    <strong>{key}:</strong> {String(value)}
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 )}
                 {/* disabled={!isValid || isSubmitting} */}
