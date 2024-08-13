@@ -6,7 +6,6 @@ export default function PageScreenLayout({ children }: Readonly<{ children: Reac
   return (
     <Fragment>
       {children}
-      <StairAnimataionLoader />
       {/* <AppFooter /> */}
     </Fragment>
   );

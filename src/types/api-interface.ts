@@ -11,6 +11,22 @@ export type ContectUsPayload = {
     address?: Address
 };
 
+export type CareerPayload = {
+    email: string;
+    phone: string;
+    title: string;
+    slug: string;
+    company: string;
+    workType?: string;
+    experience: string;
+    currentCTC: number;
+    expectedCTC: number;
+    joinImmediately: string;
+    resume: string;
+    comment: string;
+    portfolio?: string;
+};
+
 type Address = {
     street: String;
     city: String;

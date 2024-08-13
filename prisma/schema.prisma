@@ -37,6 +37,7 @@ model BlogPost {
   createdAt DateTime  @default(now()) @map("created_at")
   author    User      @relation(fields: [authorId], references: [id])
   comments  Comment[]
+
   // Custom index on title is added for optimization, as slug is unique
   @@index([id, slug])
 }
@@ -61,19 +62,41 @@ model Comment {
 }
 
 model ContectUs {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  firstName   String   @map("first_name")
-  lastName   String?  @map("last_name")
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  firstName  String    @map("first_name")
+  lastName   String?   @map("last_name")
   phone      String
-  email      String   @unique
+  email      String    @unique
   subject    String?
   message    String?
   lookingFor String?   @map("looking_for")
   budget     String?
   dueDate    DateTime? @map("due_date")
   address    Address?
-  updatedAt  DateTime @updatedAt @map("updated_at")
-  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+}
+
+model Career {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  uuid            String   @unique @default(cuid())
+  email           String   @unique
+  title           String
+  slug            String
+  company         String
+  workType        String?  @map("work_type")
+  experience      String   @map("experience_years")
+  currentCTC      Float    @map("current_ctc")
+  expectedCTC     Float    @map("expected_ctc")
+  joinImmediately String   @map("join_immediately")
+  resume          String
+  phone           String
+  portfolio       String?  @map("portfolio")
+  comment         String?
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([slug, uuid])
 }
 
 type Address {

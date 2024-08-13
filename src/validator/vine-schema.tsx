@@ -38,3 +38,33 @@ export const ApiContectUsSchema = vine.object({
         zip: vine.string().optional(),
     }).optional(),
 });
+
+
+// export const ApiCareerSchema = vine.object({
+//     firstName: vine.string().minLength(4),
+//     lastName: vine.string().optional(),
+//     phone: vine.string().minLength(10).regex(mobileRegExp),
+//     email: vine.string().email(),
+//     subject: vine.string().minLength(4),
+//     message: vine.string().minLength(4),
+//     lookingFor: vine.string(),
+//     budget: vine.string().optional(),
+//     dueDate: vine.date().optional(),
+// });
+export const ApiCareerSchema = vine.object({
+    email: vine.string().trim().email(),
+    phone: vine.string().trim().mobile().minLength(10).regex(mobileRegExp),
+    title: vine.string(),
+    slug: vine.string().trim(),
+    company: vine.string(),
+    workType: vine.string().optional(),
+    experience: vine.string().trim(),
+    currentCTC: vine.number().positive(),
+    expectedCTC: vine.number().positive(),
+    joinImmediately: vine.string(),
+    comment: vine.string().optional(),
+    // resume: vine.string().url({ require_protocol: true, protocols: ['http', 'https', 'ftp'] }),
+    // portfolio: vine.string().url({ require_protocol: true, protocols: ['http', 'https', 'ftp'] }),
+    resume: vine.string().url({ require_protocol: true, protocols: ['http', 'https', 'ftp'] }),
+    portfolio: vine.string().activeUrl(),
+});
