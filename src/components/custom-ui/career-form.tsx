@@ -28,9 +28,6 @@ export function FormCareer() {
 
     const [getFiles, setFiles] = useState<FileList | null>(null);
 
-    // console.log("FirebaseStorage", FirebaseStorage);
-
-
     const handleFilesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
         setFiles(files);
@@ -69,11 +66,20 @@ export function FormCareer() {
         try {
             // console.log('Form submitted:', data);
 
+            const formData = new FormData();
+
+            Object.entries(data).forEach(([key, value]) => {
+                formData.append(key, value as string);
+            });
+
+            if (getFiles && getFiles.length > 0) {
+                console.log(getFiles);
+
+                formData.append('resume', getFiles[0]); // Assuming only one file
+            }
+
             const baseUrl = `${window.location.protocol}//${window.location.host}`;
             const apiUrl = `${baseUrl}/api/v1/career`;
-
-            console.log(data.resume);
-            console.log(getFiles);
 
 
 
