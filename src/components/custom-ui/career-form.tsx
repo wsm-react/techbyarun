@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -26,18 +26,16 @@ export function FormCareer() {
     const [loading, setLoading] = useState<boolean>(false); // State for loading
     const router = useRouter(); // Initialize useRouter
 
-    const [files, setFiles] = useState<FileList | null>(null);
+    const [getFiles, setFiles] = useState<FileList | null>(null);
 
-    console.log("FirebaseStorage", FirebaseStorage);
+    // console.log("FirebaseStorage", FirebaseStorage);
 
 
     const handleFilesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        // Handle file change
+        const files = event.target.files;
+        setFiles(files);
     };
 
-    const handleRemoveImage = (index: number) => {
-        // Handle file removal
-    };
 
 
 
@@ -73,6 +71,11 @@ export function FormCareer() {
 
             const baseUrl = `${window.location.protocol}//${window.location.host}`;
             const apiUrl = `${baseUrl}/api/v1/career`;
+
+            console.log(data.resume);
+            console.log(getFiles);
+
+
 
             // console.log('API URL:', apiUrl);
             // console.log("sent data", JSON.stringify(data));
@@ -345,8 +348,13 @@ export function FormCareer() {
                         <FormItem>
                             <FormLabel>Resume (In PDF only max size 2 MB)</FormLabel>
                             <FormControl>
-                                <Input autoComplete="off" className='h-14 px-6' type="file" placeholder="Upload 1 supported file: PDF. Max 2 MB." {...field}
-                                // onInput={handleInput}
+                                <Input autoComplete="off" className='h-14 px-6' type="file" placeholder="Upload 1 supported file: PDF. Max 2 MB."
+                                    {...field}
+                                    accept="application/pdf, image/*"
+                                    onChange={(e) => {
+                                        handleFilesChange(e);
+                                        field.onChange(e.target.value);
+                                    }}
                                 />
                             </FormControl>
                             {errors.resume && <FormMessage className='dark:text-red-300'>{errors.resume.message}</FormMessage>}
