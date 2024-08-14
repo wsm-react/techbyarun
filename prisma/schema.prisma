@@ -78,23 +78,22 @@ model ContectUs {
 }
 
 model Career {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  uuid            String   @unique @default(cuid())
-  email           String   @unique
-  title           String
-  slug            String
-  company         String
-  workType        String?  @map("work_type")
-  experience      String   @map("experience_years")
-  currentCTC      Float    @map("current_ctc")
-  expectedCTC     Float    @map("expected_ctc")
-  joinImmediately String   @map("join_immediately")
-  resume          String
-  phone           String
-  portfolio       String?  @map("portfolio")
-  bio             String?
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  uuid         String   @unique @default(cuid())
+  email        String   @unique
+  title        String
+  slug         String
+  company      String
+  experience   String   @map("experience_years")
+  currentCTC   String   @map("current_ctc")
+  expectedCTC  String   @map("expected_ctc")
+  noticePeriod String   @map("notice_period")
+  resume       String
+  phone        String
+  portfolio    String?  @map("portfolio")
+  bio          String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   @@index([slug, uuid])
 }

@@ -17,11 +17,10 @@ export type CareerPayload = {
     title: string;
     slug: string;
     company: string;
-    workType?: string;
     experience: string;
     currentCTC: number;
     expectedCTC: number;
-    joinImmediately: string;
+    noticePeriod: string;
     resume: string;
     bio: string;
     portfolio?: string;

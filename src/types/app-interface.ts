@@ -34,5 +34,8 @@ export interface MenuLinksList {
 export interface ResultType {
     status: number;
     success: boolean;
-    message: Record<string, unknown>;
+    message: string | Record<string, unknown>;
 }
+
+
+export type ErrorType = ResultType | string;

@@ -3,11 +3,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import vine, { errors } from '@vinejs/vine';
 
-import appDB from '@/lib/database';
+
 import { JSONAPIErrorReporter } from '@/validator/error-reporter';
 import { filterUndefinedAndNull } from '@/lib/function';
 import { CareerPayload } from '@/types/api-interface';
 import { ApiCareerSchema } from '@/validator/vine-schema';
+import appDB from '@/config/database';
 
 export async function POST(req: NextRequest, res: NextResponse) {
     try {
@@ -19,12 +20,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
             errorReporter: () => new JSONAPIErrorReporter()
         });
 
-        // console.log("Validation output:", validOutput);
+        console.log("Validation output:", validOutput);
 
         const existingEmail = await appDB.career.findFirst({
-            where: {
-                email: validOutput.email,
-            },
+            where: { email: validOutput.email },
         });
 
         if (existingEmail) {
@@ -40,15 +39,18 @@ export async function POST(req: NextRequest, res: NextResponse) {
                         status: 200,
                         message: 'Thank you for reaching out to us. We have already received your details. Please allow us 7 days before submitting another request.',
                     }, { status: 200 });
+
             } else {
                 const updatedLead = await appDB.career.update({
                     where: {
                         email: validOutput.email,
                     },
+                    // @ts-ignore
                     data: filterUndefinedAndNull(validOutput as CareerPayload),
                 });
 
                 return NextResponse.json({
+                    ...updatedLead,
                     success: true,
                     status: 201,
                     message: 'Your contact information has been successfully updated. Thank you for reaching out to us.',

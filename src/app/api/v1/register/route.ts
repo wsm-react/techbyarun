@@ -1,7 +1,6 @@
+import appDB from '@/config/database';
 import { NextRequest, NextResponse } from 'next/server';
 
-// import { appDB } from '@/lib/database';
-import appDB from '@/lib/database';
 
 export async function POST(req: NextRequest, res: NextResponse) {
     try {
@@ -16,11 +15,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
             }, { status: 422 });
         }
 
-
-        // await connectToDatabase();
-        // connectToDatabase().catch(err => {
-        //     console.error('Error during database connection:', err);
-        // });
 
         const newUser = await appDB.user.create({ data: { name, email, mobile, password } });
 

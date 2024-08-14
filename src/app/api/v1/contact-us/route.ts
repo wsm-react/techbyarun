@@ -3,9 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import vine, { errors } from '@vinejs/vine';
 
-import appDB from '@/lib/database';
 import { ContectUsPayload } from '@/types/api-interface';
-import { ApiContectUsSchema } from '@/validator/schema';
 import { JSONAPIErrorReporter } from '@/validator/error-reporter';
 import { filterUndefinedAndNull } from '@/lib/function';
 

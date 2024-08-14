@@ -12,14 +12,15 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from "@/components/ui/button"
 import { CareerType, CareerFormSchema } from '@/validator/zod-schema'
-import { ResultType } from '@/types/app-interface'
-import { Textarea } from '../ui/textarea'
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@radix-ui/react-select'
+import { ErrorType, ResultType } from '@/types/app-interface'
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Textarea } from '@/components/ui/textarea'
 
 
 export function FormCareer() {
-    const [result, setResult] = useState<ResultType | null>(null); // Declare result state
-    const [error, setError] = useState<string | null>(null); // Declare error state
+    const [result, setResult] = useState<ErrorType | null>(null); // Declare result state
+    const [error, setError] = useState<ErrorType | string | null | undefined>(null); // Declare error state
     const [loading, setLoading] = useState<boolean>(false); // State for loading
     const router = useRouter(); // Initialize useRouter
 
@@ -28,15 +29,19 @@ export function FormCareer() {
         resolver: zodResolver(CareerFormSchema),
         defaultValues: {
             name: "",
-            mobile: "",
+            phone: "",
             email: "",
             title: "",
             slug: "",
             company: "",
-            joinImmediately: "",
+            experience: "",
+            // @ts-ignore
+            currentCTC: "",
+            // @ts-ignore
+            expectedCTC: "",
+            noticePeriod: "",
             resume: "",
             portfolio: "",
-            workType: "",
             bio: "",
             terms: true,
         },
@@ -53,7 +58,9 @@ export function FormCareer() {
             const baseUrl = `${window.location.protocol}//${window.location.host}`;
             const apiUrl = `${baseUrl}/api/v1/career`;
 
-            console.log('API URL:', apiUrl);
+            // console.log('API URL:', apiUrl);
+            console.log("sent data", JSON.stringify(data));
+
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -87,11 +94,12 @@ export function FormCareer() {
                 // } else {
                 //     setError(responseData.mailresponse as string);
                 // }
-
+                setResult(responseData);
+                setError(null);
             } else {
                 // Set the result to display if status is not 200
                 setResult(responseData);
-                setError(null); // Clear any previous errors
+                // setError(null); // Clear any previous errors
             }
 
             // setResult(responseData);
@@ -107,23 +115,38 @@ export function FormCareer() {
         }
     };
 
-    const StatusMessage = ({ status, icon: Icon, title, message }: { status: number, icon: React.ComponentType<any>, title: string, message: Record<string, any> }) => (
+    const StatusMessage = ({ status, icon: Icon, title, message }: {
+        status: number;
+        icon: React.ComponentType<any>;
+        title: string;
+        message: Record<string, any> | string;
+    }) => (
         <div className={`status-message-${status}`}>
             <Icon className="h-6 w-6" />
             <div>{title}</div>
-            <ul>
-                {Object.entries(message).map(([key, value]) => (
-                    <li key={key}>
-                        <strong>{key}:</strong> {String(value)}
-                    </li>
-                ))}
-            </ul>
+            {typeof message === 'string' ? (
+                <p>{message}</p>
+            ) : (
+                <ul>
+                    {Object.entries(message).map(([key, value]) => (
+                        <li key={key}>
+                            <strong>{key}:</strong> {String(value)}
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 
 
-    const renderContentBasedOnStatus = () => {
+    const renderContentBasedOnStatus = (result: ErrorType) => {
         if (result) {
+            if (typeof result === 'string') {
+                // Handle the case where result is a string
+                return <StatusMessage status={0} icon={TriangleAlert} title="Error" message={result} />;
+            }
+
+            // Now TypeScript knows result is of type ResultType
             const { status, message } = result;
 
             switch (status) {
@@ -160,35 +183,36 @@ export function FormCareer() {
                         </FormItem>
                     )} />
                 <FormField control={form.control}
-                    name="mobile"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Mobile Number</FormLabel>
-                            <FormControl>
-                                <Input autoComplete="off" className='h-14 px-6' type='tel' maxLength={10} placeholder="9919XXXXXX" {...field}
-                                />
-                            </FormControl>
-                            {errors.mobile && <FormMessage className='dark:text-red-300'>{errors.mobile.message}</FormMessage>}
-                        </FormItem>
-                    )} />
-                <FormField control={form.control}
                     name="email"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Email address</FormLabel>
                             <FormControl>
-                                <Input autoComplete="off" className='h-14 px-6' type='email' placeholder="me@example.org" {...field} />
+                                <Input autoComplete="off" className='h-14 px-6' type='email' placeholder="Your answer" {...field} />
                             </FormControl>
                             {errors.email && <FormMessage className='dark:text-red-300'>{errors.email.message}</FormMessage>}
                         </FormItem>
                     )} />
+                <FormField control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Phone Number</FormLabel>
+                            <FormControl>
+                                <Input autoComplete="off" className='h-14 px-6' type='tel' maxLength={10} placeholder="9919XXXXXX" {...field}
+                                />
+                            </FormControl>
+                            {errors.phone && <FormMessage className='dark:text-red-300'>{errors.phone.message}</FormMessage>}
+                        </FormItem>
+                    )} />
+
                 <FormField control={form.control}
                     name="company"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Company</FormLabel>
                             <FormControl>
-                                <Input autoComplete="off" className='h-14 px-6' type='text' placeholder="Enter your company" {...field}
+                                <Input autoComplete="off" className='h-14 px-6' type='text' placeholder="Your answer" {...field}
                                 // onInput={handleInput}
                                 />
                             </FormControl>
@@ -197,38 +221,34 @@ export function FormCareer() {
                     )} />
                 <FormField
                     control={form.control}
-                    name="workType"
+                    name="experience"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Work type</FormLabel>
+                            <FormLabel>How many years of relevant work experience do you have?</FormLabel>
                             <FormControl>
-                                <Input autoComplete="off" className='h-14 px-6' type='text' placeholder="Enter your workType" {...field}
+                                <Input autoComplete="off" className='h-14 px-6' type='text' placeholder="Your answer"
+                                    {...field}
+                                    value={field.value !== null ? field.value : ''} // Handle null value
+                                    onChange={(e) => field.onChange(e.target.value.toString() ? e.target.value.toString() : '')}
                                 // onInput={handleInput}
                                 />
                             </FormControl>
-                            {errors.workType && <FormMessage className='dark:text-red-300'>{errors.workType.message}</FormMessage>}
+                            {errors.experience && <FormMessage className='dark:text-red-300'>{errors.experience.message}</FormMessage>}
                         </FormItem>
                     )}
                 />
                 <FormField
                     control={form.control}
-                    name="experience"
+                    name="noticePeriod"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Experience</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a verified email to display" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    <SelectItem value="m@example.com">m@example.com</SelectItem>
-                                    <SelectItem value="m@google.com">m@google.com</SelectItem>
-                                    <SelectItem value="m@support.com">m@support.com</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            {errors.experience && <FormMessage className='dark:text-red-300'>{errors.experience.message}</FormMessage>}
+                            <FormLabel>Notice Period </FormLabel>
+                            <FormControl>
+                                <Input autoComplete="off" className='h-14 px-6' type='text' placeholder="Your answer" {...field}
+                                // onInput={handleInput}
+                                />
+                            </FormControl>
+                            {errors.noticePeriod && <FormMessage className='dark:text-red-300'>{errors.noticePeriod.message}</FormMessage>}
                         </FormItem>
                     )}
                 />
@@ -237,11 +257,12 @@ export function FormCareer() {
                     name="currentCTC"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Current CTC</FormLabel>
+                            <FormLabel>Your current annual salary? (in CTC)</FormLabel>
                             <FormControl>
-                                <Input autoComplete="off" className='h-14 px-6' type='number' placeholder="Enter your currentCTC"  {...field}
-                                    value={field.value !== null ? field.value : ''} // Handle null value
-                                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : '')}
+                                <Input autoComplete="off" className='h-14 px-6' type='text' placeholder="Example if 5LPA mention 500000"
+                                    {...field}
+                                // value={field.value !== null ? field.value : ''} // Handle null value
+                                // onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : '')}
                                 />
                             </FormControl>
                             {errors.currentCTC && <FormMessage className='dark:text-red-300'>{errors.currentCTC.message}</FormMessage>}
@@ -253,33 +274,20 @@ export function FormCareer() {
                     name="expectedCTC"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Expected CTC</FormLabel>
+                            <FormLabel>What is your desired annual salary? (in CTC)</FormLabel>
                             <FormControl>
-                                <Input autoComplete="off" className='h-14 px-6' type='text' placeholder="Enter your expectedCTC" {...field}
-                                    // onInput={handleInput}
-                                    value={field.value !== null ? field.value : ''} // Handle null value
-                                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : '')}
+                                <Input autoComplete="off" className='h-14 px-6' type='text' placeholder="Example if 5LPA mention 500000"
+                                    {...field}
+                                // value={field.value !== null ? field.value : ''} // Handle null value
+                                // onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : '')}
+                                // onInput={handleInput}
                                 />
                             </FormControl>
                             {errors.expectedCTC && <FormMessage className='dark:text-red-300'>{errors.expectedCTC.message}</FormMessage>}
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="joinImmediately"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Join immediately</FormLabel>
-                            <FormControl>
-                                <Input autoComplete="off" className='h-14 px-6' type='text' placeholder="Enter your joinImmediately" {...field}
-                                // onInput={handleInput}
-                                />
-                            </FormControl>
-                            {errors.joinImmediately && <FormMessage className='dark:text-red-300'>{errors.joinImmediately.message}</FormMessage>}
-                        </FormItem>
-                    )}
-                />
+
                 <FormField
                     control={form.control}
                     name="bio"
@@ -287,7 +295,7 @@ export function FormCareer() {
                         <FormItem>
                             <FormLabel>Bio</FormLabel>
                             <FormControl>
-                                <Textarea autoComplete="off" className='h-14 px-6' placeholder="Enter your bio" {...field}
+                                <Textarea autoComplete="off" className='h-14 px-6' placeholder="Your answer" {...field}
                                 // onInput={handleInput}
                                 />
                             </FormControl>
@@ -300,15 +308,12 @@ export function FormCareer() {
                     name="resume"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Upload resume</FormLabel>
+                            <FormLabel>Resume (In PDF only max size 2 MB)</FormLabel>
                             <FormControl>
-                                <Input autoComplete="off" className='h-14 px-6' type="file" placeholder="Enter your resume" {...field}
+                                <Input autoComplete="off" className='h-14 px-6' type="file" placeholder="Upload 1 supported file: PDF. Max 2 MB." {...field}
                                 // onInput={handleInput}
                                 />
                             </FormControl>
-                            <FormDescription>
-                                DOC, DOCX, PDF (2 MB)
-                            </FormDescription>
                             {errors.resume && <FormMessage className='dark:text-red-300'>{errors.resume.message}</FormMessage>}
                         </FormItem>
                     )}
@@ -318,7 +323,7 @@ export function FormCareer() {
                     name="portfolio"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Portfolio Link</FormLabel>
+                            <FormLabel>Your Portfolio profile link</FormLabel>
                             <FormControl>
                                 <Input autoComplete="off" className='h-14 px-6' type='text' placeholder="as https://linkedin.com/in/yourid/" {...field}
                                 // onInput={handleInput}
@@ -351,23 +356,33 @@ export function FormCareer() {
                             </div>
                         </FormItem>
                     )} />
-                {result && renderContentBasedOnStatus()}
-                {/* Display error */}
+                {result && renderContentBasedOnStatus(result)}
+
                 {error && (
-                    <div className='mt-4 p-4 rounded-md border border-red-500 text-red-700 bg-red-50 dark:bg-red-900 dark:border-red-600 dark:text-red-400'>
-                        <AlertCircle className="inline h-5 w-5 mr-2" />
-                        <ul>
-                            {Object.entries(error).map(([key, value]) => (
-                                <li key={key}>
-                                    <strong>{key}:</strong> {String(value)}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                    typeof error === 'string' ? (
+                        <p>{error}</p>
+                    ) : (
+                        <div className='mt-4 p-4 rounded-md border border-red-500 text-red-700 bg-red-50 dark:bg-red-900 dark:border-red-600 dark:text-red-400'>
+                            <AlertCircle className="inline h-5 w-5 mr-2" />
+                            {typeof error.message === 'string' ? (
+                                <p>{error.message}</p>
+                            ) : (
+                                <ul>
+                                    {Object.entries(error).map(([key, value]) => (
+                                        <li key={key}>
+                                            <strong>{key}:</strong> {String(value)}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    )
                 )}
+
                 {/* disabled={!isValid || isSubmitting} */}
                 <div className="pt-6 w-full">
-                    <Button disabled={loading || !isValid} className='h-14 disabled:opacity-80  px-16 w-full sm:w-auto font-bold dark:text-white' type="submit" >  {loading ? (
+                    {/* disabled={loading || !isValid}  */}
+                    <Button className='h-14 disabled:opacity-80  px-16 w-full sm:w-auto font-bold dark:text-white' type="submit" >  {loading ? (
                         <><Loader2 className="mr-2 h-7 w-7 animate-spin" /> Please wait ...</>
                     ) : (
                         'Continue'
