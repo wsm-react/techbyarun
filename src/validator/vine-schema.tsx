@@ -51,6 +51,7 @@ export const ApiContectUsSchema = vine.object({
 //     budget: vine.string().optional(),
 //     dueDate: vine.date().optional(),
 // });
+
 export const ApiCareerSchema = vine.object({
     email: vine.string().trim().email(),
     phone: vine.string().trim().mobile().minLength(10).regex(mobileRegExp),

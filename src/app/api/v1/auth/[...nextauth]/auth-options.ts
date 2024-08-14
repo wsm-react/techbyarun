@@ -1,6 +1,7 @@
 import { AuthOptions } from 'next-auth';
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import { EnvApp } from '@/helpers/constants';
 
 // import bcrypt from "bcrypt";
 
@@ -45,6 +46,6 @@ export const authOptions: AuthOptions = {
         signIn: "/login",
     },
     session: { strategy: "jwt" },
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: EnvApp.AUTH_SECRET,
     // adapter: PrismaAdapter(appDB),
 };

@@ -16,6 +16,8 @@ import { ErrorType, ResultType } from '@/types/app-interface'
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Textarea } from '@/components/ui/textarea'
+import ImageUpload from './image-upload'
+import { FirebaseStorage } from '@/config/firebase-config'
 
 
 export function FormCareer() {
@@ -24,25 +26,39 @@ export function FormCareer() {
     const [loading, setLoading] = useState<boolean>(false); // State for loading
     const router = useRouter(); // Initialize useRouter
 
+    const [files, setFiles] = useState<FileList | null>(null);
+
+    console.log("FirebaseStorage", FirebaseStorage);
+
+
+    const handleFilesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        // Handle file change
+    };
+
+    const handleRemoveImage = (index: number) => {
+        // Handle file removal
+    };
+
+
 
     const form = useForm<CareerType>({
         resolver: zodResolver(CareerFormSchema),
         defaultValues: {
-            name: "",
-            phone: "",
-            email: "",
-            title: "",
-            slug: "",
-            company: "",
-            experience: "",
+            name: "Arun KUmar Gupta",
+            phone: "8860566501",
+            email: "arun99178@gmail.com",
+            title: "Globe Capital Market Ltd",
+            slug: "Globe Capital Market Ltd",
+            company: "Globe Capital Market Ltd",
+            experience: "20",
             // @ts-ignore
-            currentCTC: "",
+            currentCTC: "20000",
             // @ts-ignore
-            expectedCTC: "",
-            noticePeriod: "",
+            expectedCTC: "2000",
+            noticePeriod: "66666",
             resume: "",
-            portfolio: "",
-            bio: "",
+            portfolio: "https://www.linkedin.com/in/arun99178/",
+            bio: "asasas",
             terms: true,
         },
         mode: 'onChange',
@@ -59,7 +75,7 @@ export function FormCareer() {
             const apiUrl = `${baseUrl}/api/v1/career`;
 
             // console.log('API URL:', apiUrl);
-            console.log("sent data", JSON.stringify(data));
+            // console.log("sent data", JSON.stringify(data));
 
 
             const response = await fetch(apiUrl, {
@@ -156,7 +172,7 @@ export function FormCareer() {
                 case 422:
                     return <StatusMessage status={status} icon={TriangleAlert} title="Sorry" message={message} />;
                 case 201:
-                    return <StatusMessage status={status} icon={TriangleAlert} title="Processing" message={message} />;
+                    return <StatusMessage status={status} icon={TriangleAlert} title="Success" message={message} />;
                 default:
                     return null;
             }
@@ -303,6 +319,25 @@ export function FormCareer() {
                         </FormItem>
                     )}
                 />
+                {/* <FormField
+                    control={form.control}
+                    name="resume"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Resume (In PDF only max size 2 MB)</FormLabel>
+                            <FormControl>
+                                <ImageUpload
+                                    {...field}
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    onRemove={handleRemoveImage}
+                                    images={[]} // Pre-existing images if any
+                                />
+                            </FormControl>
+                            {errors.resume && <FormMessage className='dark:text-red-300'>{errors.resume.message}</FormMessage>}
+                        </FormItem>
+                    )}
+                /> */}
                 <FormField
                     control={form.control}
                     name="resume"

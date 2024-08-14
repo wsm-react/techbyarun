@@ -9,6 +9,7 @@ import { filterUndefinedAndNull } from '@/lib/function';
 import { CareerPayload } from '@/types/api-interface';
 import { ApiCareerSchema } from '@/validator/vine-schema';
 import appDB from '@/config/database';
+import { EnvApp, EnvMailer } from '@/helpers/constants';
 
 export async function POST(req: NextRequest, res: NextResponse) {
     try {
@@ -16,11 +17,17 @@ export async function POST(req: NextRequest, res: NextResponse) {
         const payload: CareerPayload = await req.json();
 
         const validator = vine.compile(ApiCareerSchema);
-        const validOutput = await validator.validate(payload, {
+        const output = await validator.validate(payload, {
             errorReporter: () => new JSONAPIErrorReporter()
         });
 
-        console.log("Validation output:", validOutput);
+        console.log("Validation output:", output);
+
+        const validOutput = {
+            ...output,
+            currentCTC: output.currentCTC.toString(),
+            expectedCTC: output.expectedCTC.toString(),
+        }
 
         const existingEmail = await appDB.career.findFirst({
             where: { email: validOutput.email },
@@ -50,7 +57,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 });
 
                 return NextResponse.json({
-                    ...updatedLead,
+                    // ...updatedLead,
                     success: true,
                     status: 201,
                     message: 'Your contact information has been successfully updated. Thank you for reaching out to us.',
@@ -69,7 +76,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
             ...newLead,
             success: true,
             status: 201,
-            message: 'New lead created for new user.',
+            message: `Thank you for applying for the position of ${newLeadData.title} at ${EnvApp.SITE_DOMIN}. We appreciate your interest in joining our team. Our recruitment team will review your application and get back to you soon. If you have any questions or need further information, feel free to reach out to us.`,
         }, { status: 201 });
 
     } catch (error: any) {
