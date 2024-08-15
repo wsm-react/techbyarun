@@ -18,6 +18,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { AppFirebaseStorage } from '@/config/firebase-config'
 import { sanitizeFileName } from '@/lib/function'
+import { CareerFileUpload } from '@/actions/career'
 
 export function FormCareer() {
     const [result, setResult] = useState<ErrorType | null>(null); // Declare result state
@@ -86,6 +87,28 @@ export function FormCareer() {
             // console.log('API response:', responseData);
 
             if (responseData.status === 200) {
+
+                const formData = new FormData();
+                Object.entries(data).forEach(([key, value]) => {
+                    formData.append(key, value as string);
+                });
+
+                if (getFiles && getFiles.length > 0) {
+                    const fileData: File = getFiles[0];
+                    const sanitizedFileName: string = sanitizeFileName(fileData);
+                    formData.append('resume', new File([fileData], sanitizedFileName)); // Assuming only one file
+                    // submitData = { ...data, resume: fileData }
+                    // const fileRef = ref(AppFirebaseStorage, `uploads-alldata/career/${sanitizedFileName}`);
+
+                    // await uploadBytes(fileRef, fileData).then(async (fileData) => {
+                    //     const dataUri = await getDownloadURL(fileData.ref);
+                    //     console.log(dataUri);
+                    // });
+                    console.log("fileData", fileData);
+                }
+
+
+                CareerFileUpload(formData, responseData.id);
                 // Redirect to a success page
                 // console.log(responseData.email);
 
