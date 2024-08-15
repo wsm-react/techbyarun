@@ -1,6 +1,21 @@
 import { z } from 'zod';
 import { mobileRegExp } from '@/lib/function';
 
+const MAX_MB = 10
+const MAX_UPLOAD_SIZE = 1024 * 1024 * MAX_MB;
+
+const ACCEPTED_IMAGE_TYPES = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/webp",
+];
+
+const ACCEPTED_RESUME_TYPES = [
+    "application/pdf", "application/msword"
+];
+
+
 export const CareerFormSchema = z.object({
     name: z.string()
         .min(4, { message: "Name must be at least 4 characters long" })
@@ -37,7 +52,27 @@ export const CareerFormSchema = z.object({
     ),
     noticePeriod: z.string(),
     bio: z.string().optional(),
-    resume: z.string().url({ message: "Invalid url" }),
+    // resume: z.string().url({ message: "Invalid url" }),
+    // resume: z.instanceof(FileList).refine((file) => file?.length == 1, 'File is required.'),
+    // resume: z.instanceof(FileList),
+    resume: z.instanceof(File)
+        .refine((file) => {
+            return !file || file.size <= MAX_UPLOAD_SIZE;
+        }, `File size must be less than ${MAX_MB} MB`)
+        .refine((file) => {
+            return ACCEPTED_RESUME_TYPES.includes(file.type);
+        }, 'File must be a "PDF" or "word Document"'),
+
+    // .refine((file) => {
+    //     if (file.size === 0 || file.name === undefined) return false;
+    //     else return true;
+    // }, "Please update or add new image.")
+    // .refine(
+    //     (file) => ACCEPTED_RESUME_TYPES.includes(file?.type),
+    //     ".jpg, .jpeg, .png and .webp files are accepted."
+    // )
+    // .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 5MB.`),
+
     portfolio: z.string().url({ message: "Invalid url" }),
     // terms: z.boolean().refine(val => val === true, { message: "You must accept the terms and conditions" })
     terms: z.coerce.boolean().refine(val => val === true, { message: "You must accept the terms and conditions" }),

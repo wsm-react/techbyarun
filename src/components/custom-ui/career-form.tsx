@@ -5,20 +5,19 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ChangeEvent, useState } from 'react'
+import { useState } from 'react'
 
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from "@/components/ui/button"
 import { CareerType, CareerFormSchema } from '@/validator/zod-schema'
-import { ErrorType, ResultType } from '@/types/app-interface'
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { ErrorType } from '@/types/app-interface'
 import { Textarea } from '@/components/ui/textarea'
-import ImageUpload from './image-upload'
-import { FirebaseStorage } from '@/config/firebase-config'
 
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { AppFirebaseStorage } from '@/config/firebase-config'
+import { sanitizeFileName } from '@/lib/function'
 
 export function FormCareer() {
     const [result, setResult] = useState<ErrorType | null>(null); // Declare result state
@@ -28,13 +27,12 @@ export function FormCareer() {
 
     const [getFiles, setFiles] = useState<FileList | null>(null);
 
+
+
     const handleFilesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
         setFiles(files);
     };
-
-
-
 
     const form = useForm<CareerType>({
         resolver: zodResolver(CareerFormSchema),
@@ -51,7 +49,8 @@ export function FormCareer() {
             // @ts-ignore
             expectedCTC: "2000",
             noticePeriod: "66666",
-            resume: "",
+            // resume: "",
+            resume: new File([], ''),
             portfolio: "https://www.linkedin.com/in/arun99178/",
             bio: "asasas",
             terms: true,
@@ -61,38 +60,54 @@ export function FormCareer() {
 
     const { handleSubmit, control, formState: { isSubmitting, isValid, errors } } = form;
 
+    // const fileRef = form.register("resume");
+
     const onSubmitForm = async (data: CareerType) => {
         setLoading(true); // Start loading
         try {
             // console.log('Form submitted:', data);
+            // console.log("formState", control.);
+            // const formData = new FormData();
 
             const formData = new FormData();
-
             Object.entries(data).forEach(([key, value]) => {
-                formData.append(key, value as string);
+                formData.append(key, value as string | Blob);
             });
 
             if (getFiles && getFiles.length > 0) {
-                console.log(getFiles);
+                const fileData: File = getFiles[0];
+                const sanitizedFileName: string = sanitizeFileName(fileData);
+                formData.append('resume', new File([fileData], sanitizedFileName)); // Assuming only one file
+                // submitData = { ...data, resume: fileData }
+                // const fileRef = ref(AppFirebaseStorage, `uploads-alldata/career/${sanitizedFileName}`);
 
-                formData.append('resume', getFiles[0]); // Assuming only one file
+                // await uploadBytes(fileRef, fileData).then(async (fileData) => {
+                //     const dataUri = await getDownloadURL(fileData.ref);
+                //     console.log(dataUri);
+                // });
             }
+
+
 
             const baseUrl = `${window.location.protocol}//${window.location.host}`;
             const apiUrl = `${baseUrl}/api/v1/career`;
 
-
-
             // console.log('API URL:', apiUrl);
             // console.log("sent data", JSON.stringify(data));
+
+            // console.log(JSON.stringify(formData));
+
+            // const datasas = { ...data, resume: "" };
+
+            console.log(formData);
 
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
+                // headers: { 'Content-Type': 'application/json' },
+                // body: formData,
+                // body: JSON.stringify(data),
+                body: formData,
             });
 
             const responseData = await response.json();
@@ -347,23 +362,47 @@ export function FormCareer() {
                         </FormItem>
                     )}
                 /> */}
-                <FormField
+
+                {/* <FormField
                     control={form.control}
                     name="resume"
-                    render={({ field }) => (
+                    render={({ field: { value, onChange, ...fieldProps } }) => (
                         <FormItem>
                             <FormLabel>Resume (In PDF only max size 2 MB)</FormLabel>
                             <FormControl>
-                                <Input autoComplete="off" className='h-14 px-6' type="file" placeholder="Upload 1 supported file: PDF. Max 2 MB."
-                                    {...field}
-                                    accept="application/pdf, image/*"
+                                <Input
+                                    autoComplete="off" className='h-14 px-6' type="file" placeholder="Upload 1 supported file: PDF. Max 2 MB."
+                                    {...fieldProps}
                                     onChange={(e) => {
                                         handleFilesChange(e);
-                                        field.onChange(e.target.value);
+                                        // field.onChange(e.target.value);
                                     }}
                                 />
                             </FormControl>
-                            {errors.resume && <FormMessage className='dark:text-red-300'>{errors.resume.message}</FormMessage>}
+                            {errors.resume && (<FormMessage className='dark:text-red-300'>{typeof errors.resume.message === 'string' ? errors.resume.message : 'An error occurred'}</FormMessage>)}
+                        </FormItem>
+                    )}
+                /> */}
+                <FormField
+                    control={form.control}
+                    name="resume"
+                    // render={({ field: { value, onChange, ...fieldProps } }) => (
+                    render={({ field: { value, onChange, ...fieldProps } }) => (
+                        <FormItem>
+                            <FormLabel>Resume (In PDF only max size 2 MB)</FormLabel>
+                            <FormControl>
+                                <Input
+                                    autoComplete="off" className='h-14 px-6' type="file" placeholder="Upload 1 supported file: PDF. Max 2 MB."
+                                    {...fieldProps}
+                                    onChange={(e) => {
+                                        // console.log(e);
+
+                                        handleFilesChange(e);
+                                        onChange(e.target.files?.[0]);
+                                    }}
+                                />
+                            </FormControl>
+                            {errors.resume && (<FormMessage className='dark:text-red-300'>{typeof errors.resume.message === 'string' ? errors.resume.message : 'An error occurred'}</FormMessage>)}
                         </FormItem>
                     )}
                 />

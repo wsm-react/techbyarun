@@ -1,5 +1,5 @@
 
-import { EnvApp } from '@/helpers/constants';
+// import { EnvApp } from '@/helpers/constants';
 import ejs from 'ejs';
 import path from 'path';
 
@@ -7,8 +7,8 @@ import path from 'path';
 export const RenderMailTemplate = async (templateName: string, data: any): Promise<string> => {
     const templatePath = path.join(process.cwd(), 'src', 'templates', templateName);
 
-    const DominUrl = EnvApp.SITE_URL?.endsWith('/') ? EnvApp.SITE_URL : `${EnvApp.SITE_URL}/`;
-    const DominName = EnvApp.SITE_DOMIN ? EnvApp.SITE_DOMIN : EnvApp.SITE_DOMIN;
+    const DominUrl = process.env.SITE_URL?.endsWith('/') ? process.env.SITE_URL : `${process.env.SITE_URL}/`;
+    const DominName = process.env.SITE_DOMIN ? process.env.SITE_DOMIN : process.env.SITE_DOMIN;
 
     const newData = { ...data, DominUrl, DominName };
 

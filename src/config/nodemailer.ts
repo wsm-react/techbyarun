@@ -1,16 +1,15 @@
 // lib/email.ts
-import { EnvMailer } from '@/helpers/constants';
 import nodemailer from 'nodemailer';
 
 
 
 const transporter = nodemailer.createTransport({
-    host: EnvMailer.SMTP_HOST as string, // GoDaddy SMTP server
-    port: Number(EnvMailer.SMTP_PORT as string), // or 587
-    secure: EnvMailer.SMTP_SECURE === 'true', // true for 465, false for other ports
+    host: process.env.GODADDY_SMTP_HOST as string, // GoDaddy SMTP server
+    port: Number(process.env.GODADDY_SMTP_PORT as string), // or 587
+    secure: process.env.GODADDY_SMTP_SECURE === 'true', // true for 465, false for other ports
     auth: {
-        user: EnvMailer.SMTP_USER as string, // your GoDaddy email
-        pass: EnvMailer.SMTP_PASSWORD as string, // your GoDaddy email password
+        user: process.env.GODADDY_SMTP_USER as string, // your GoDaddy email
+        pass: process.env.GODADDY_SMTP_PASSWORD as string, // your GoDaddy email password
     },
 } as nodemailer.TransportOptions); // Cast to TransportOptions
 
@@ -35,7 +34,7 @@ export const SendEmailSingleRecipients = async ({ to, subject, html, bcc }: Emai
     const bccRecipients = Array.isArray(bcc) ? bcc : (bcc ? [bcc] : []);
 
     const mailOptions = {
-        from: EnvMailer.EMAIL_FROM as string,
+        from: process.env.GODADDY_EMAIL_FROM as string,
         to: recipients.join(', '),
         subject,
         html,
@@ -70,7 +69,7 @@ export const SendEmailWithAttachmentToRecipients = async ({ to, subject, html, b
     const bccRecipients = Array.isArray(bcc) ? bcc : (bcc ? [bcc] : []);
 
     const mailOptions: nodemailer.SendMailOptions = {
-        from: EnvMailer.EMAIL_FROM as string,
+        from: process.env.GODADDY_EMAIL_FROM as string,
         to: recipients.join(', '),
         subject,
         html,
@@ -104,7 +103,7 @@ export const SendEmailMultipalRecipients = async (
 
     for (const recipient of recipients) {
         const mailOptions = {
-            from: EnvMailer.EMAIL_FROM as string,
+            from: process.env.GODADDY_EMAIL_FROM as string,
             to: recipient,
             subject,
             html,

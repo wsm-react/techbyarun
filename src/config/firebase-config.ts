@@ -1,26 +1,25 @@
-// Import the functions you need from the SDKs you need
+
 import { initializeApp, getApp, getApps } from "firebase/app";
 import { getStorage } from "firebase/storage";
-import { EnvFirebase } from '@/helpers/constants';
+// import { EnvFirebase } from '@/helpers/constants';
 
-// import { getAnalytics } from "firebase/analytics";
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
 const FirebaseConfig = {
-  apiKey: EnvFirebase.API_KEY,
-  authDomain: EnvFirebase.AUTH_DOMAIN,
-  projectId: EnvFirebase.PROJECT_ID,
-  storageBucket: EnvFirebase.STORAGE_BUCKET,
-  messagingSenderId: EnvFirebase.MESSAGING_SENDER_ID,
-  appId: EnvFirebase.APP_ID,
-  measurementId: EnvFirebase.MEASUREMENT_ID,
+  apiKey: process.env.FIREBASE_API_KEY || "AIzaSyAlIFQKyw8ioalSuvhTQo8kuf6w5RXfmog",
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN || "clinchwealthio.firebaseapp.com",
+  projectId: process.env.FIREBASE_PROJECT_ID || "clinchwealthio",
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "clinchwealthio.appspot.com",
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || "753460243160",
+  appId: process.env.FIREBASE_APP_ID || "1:753460243160:web:d931f998fa20b6afad05ad",
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID || "G-Z569RC279G",
 };
+
+console.log("FirebaseConfig", FirebaseConfig);
+
 
 // Initialize Firebase
 // const FirebaseApp = initializeApp(FirebaseConfig);
 const FirebaseApp = !getApps().length ? initializeApp(FirebaseConfig) : getApp();
-export const FirebaseStorage = getStorage(FirebaseApp);
+export const AppFirebaseStorage = getStorage(FirebaseApp);
+
 // export const FirebaseAnalytics = getAnalytics(FirebaseApp);

@@ -48,3 +48,30 @@ export function filterUndefined<T extends Record<string, any>>(obj: T): Partial<
 export function filterUndefinedAndNull<T extends Record<string, any>>(obj: T): Partial<T> {
   return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v !== undefined && v !== null)) as Partial<T>;
 }
+
+// export function sanitizeFileName(file: File): string {
+//   if (!(file instanceof File)) {
+//     throw new Error('Input must be a File object.');
+//   }
+//   let fileName = file.name;
+//   // Replace spaces and special characters with underscores
+//   fileName = fileName.replace(/[^a-zA-Z0-9.]/g, '-');
+//   return fileName;
+// }
+
+export function sanitizeFileName(file: File, prefix: string = 'clinchwealth'): string {
+  if (!(file instanceof File)) {
+    throw new Error('Input must be a File object.');
+  }
+  let fileName = file.name;
+  // Remove spaces and replace special characters with hyphens
+  fileName = fileName.replace(/[^a-zA-Z0-9.]/g, '-');
+  // Get current date and time
+  const now = new Date();
+  const dateString = now.toISOString().replace(/[:T.-]/g, '-'); // Example format: 2024-08-15-10-23-23
+  // Split the file name into name and extension
+  const [name, extension] = fileName.split('.');
+  // Construct the new file name
+  const newFileName = `${prefix}-${name}-${dateString}.${extension || ''}`;
+  return newFileName.toLowerCase();
+}
