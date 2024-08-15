@@ -14,7 +14,7 @@ const FirebaseConfig = {
   measurementId: process.env.FIREBASE_MEASUREMENT_ID || "G-Z569RC279G",
 };
 
-console.log("FirebaseConfig", FirebaseConfig);
+// console.log("FirebaseConfig", FirebaseConfig);
 
 
 // Initialize Firebase
