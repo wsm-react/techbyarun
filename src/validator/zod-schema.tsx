@@ -53,7 +53,7 @@ export const CareerFormSchema = z.object({
     // resume: z.string().url({ message: "Invalid url" }),
     // resume: z.instanceof(FileList).refine((file) => file?.length == 1, 'File is required.'),
     // resume: z.instanceof(FileList),
-    resume: z.instanceof(File)
+    resumeUri: z.instanceof(File)
         .refine((file) => { return !file || file.size <= MAX_RESUME_UPLOAD_SIZE }, `File size must be less than ${MAX_RESUME_MB} MB`)
         .refine((file) => { return ACCEPTED_RESUME_TYPES.includes(file.type) }, 'File must be a "PDF" or "word Document"'),
 

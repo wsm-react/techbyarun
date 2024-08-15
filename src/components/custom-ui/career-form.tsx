@@ -15,8 +15,7 @@ import { CareerType, CareerFormSchema } from '@/validator/zod-schema'
 import { ErrorType } from '@/types/app-interface'
 import { Textarea } from '@/components/ui/textarea'
 
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { AppFirebaseStorage } from '@/config/firebase-config'
+
 import { sanitizeFileName } from '@/lib/function'
 import { CareerFileUpload } from '@/actions/career'
 
@@ -49,7 +48,7 @@ export function FormCareer() {
             // @ts-ignore
             expectedCTC: "2000",
             noticePeriod: "66666",
-            resume: new File([], ''),
+            resumeUri: new File([], ''),
             portfolio: "https://www.linkedin.com/in/arun99178/",
             bio: "asasas",
             terms: true,
@@ -64,68 +63,18 @@ export function FormCareer() {
         try {
             setError(null);
             setResult(null);
-            const baseUrl = `${window.location.protocol}//${window.location.host}`;
-            const apiUrl = `${baseUrl}/api/v1/career`;
-
-            console.log(data);
-
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
+            const formData = new FormData();
+            Object.entries(data).forEach(([key, value]) => {
+                formData.append(key, value as string);
             });
 
-            const responseData = await response.json();
-
-            console.log("responseData", responseData);
-
-            if (!response.ok) {
-                setError(responseData.message || 'An unknown error occurred.');
-                setResult(null); // Clear any previous results
-                return;
+            if (getFiles && getFiles.length > 0) {
+                const fileData: File = getFiles[0];
+                const sanitizedFileName: string = sanitizeFileName(fileData);
+                formData.append('resumeUri', new File([fileData], sanitizedFileName));
+                // console.log("fileData", fileData);
+                CareerFileUpload(formData, fileData);
             }
-            // console.log('API response:', responseData);
-
-            if (responseData.status === 200) {
-
-                const formData = new FormData();
-                Object.entries(data).forEach(([key, value]) => {
-                    formData.append(key, value as string);
-                });
-
-                if (getFiles && getFiles.length > 0) {
-                    const fileData: File = getFiles[0];
-                    const sanitizedFileName: string = sanitizeFileName(fileData);
-                    formData.append('resume', new File([fileData], sanitizedFileName)); // Assuming only one file
-                    // submitData = { ...data, resume: fileData }
-                    // const fileRef = ref(AppFirebaseStorage, `uploads-alldata/career/${sanitizedFileName}`);
-
-                    // await uploadBytes(fileRef, fileData).then(async (fileData) => {
-                    //     const dataUri = await getDownloadURL(fileData.ref);
-                    //     console.log(dataUri);
-                    // });
-                    console.log("fileData", fileData);
-                }
-
-
-                CareerFileUpload(formData, responseData.id);
-                // Redirect to a success page
-                // console.log(responseData.email);
-
-                // if (responseData.mailsent === true) {
-                //     // router.push('/success');
-                // } else {
-                //     setError(responseData.mailresponse as string);
-                // }
-                setResult(responseData);
-                setError(null);
-            } else {
-                // Set the result to display if status is not 200
-                setResult(responseData);
-                // setError(null); // Clear any previous errors
-            }
-
-            // setResult(responseData);
 
         } catch (err) {
             // Handle unexpected errors
@@ -387,7 +336,7 @@ export function FormCareer() {
                 /> */}
                 <FormField
                     control={form.control}
-                    name="resume"
+                    name="resumeUri"
                     render={({ field: { value, onChange, ...fieldProps } }) => (
                         <FormItem>
                             <FormLabel>Resume (In PDF only max size 2 MB)</FormLabel>
@@ -401,7 +350,7 @@ export function FormCareer() {
                                     }}
                                 />
                             </FormControl>
-                            {errors.resume && (<FormMessage className='dark:text-red-300'>{typeof errors.resume.message === 'string' ? errors.resume.message : 'An error occurred'}</FormMessage>)}
+                            {errors.resumeUri && (<FormMessage className='dark:text-red-300'>{typeof errors.resumeUri.message === 'string' ? errors.resumeUri.message : 'An error occurred'}</FormMessage>)}
                         </FormItem>
                     )}
                 />

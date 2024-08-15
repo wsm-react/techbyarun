@@ -36,11 +36,11 @@ export async function POST(req: NextRequest, res: NextResponse) {
         });
 
         if (existingEmail) {
-            console.log(existingEmail);
+            // console.log(existingEmail);
 
             const leadCreatedAt = new Date(existingEmail.createdAt);
-            const now = new Date();
-            const daysDifference = Math.floor((now.getTime() - leadCreatedAt.getTime()) / (1000 * 60 * 60 * 24));
+            const currentDate = new Date();
+            const daysDifference = Math.floor((currentDate.getTime() - leadCreatedAt.getTime()) / (1000 * 60 * 60 * 24));
 
             if (daysDifference < 7) {
                 return NextResponse.json(

@@ -78,40 +78,27 @@ model ContectUs {
 }
 
 model Career {
-  id           String         @id @default(auto()) @map("_id") @db.ObjectId
-  uuid         String         @unique @default(cuid())
-  email        String         @unique
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  uuid         String   @unique @default(cuid())
   title        String
   slug         String
-  company      String
-  experience   String         @map("experience_years")
-  currentCTC   String         @map("current_ctc")
-  expectedCTC  String         @map("expected_ctc")
-  noticePeriod String         @map("notice_period")
+  email        String   @unique
   phone        String
-  portfolio    String?        @map("portfolio")
+  portfolio    String?  @map("portfolio")
   bio          String?
-  resumeId     CareerResume[]
-  createdAt    DateTime       @default(now()) @map("created_at")
-  updatedAt    DateTime       @updatedAt @map("updated_at")
+  company      String?
+  experience   String   @map("experience_years")
+  currentCTC   String   @map("current_ctc")
+  expectedCTC  String   @map("expected_ctc")
+  noticePeriod String?   @map("notice_period")
+  resumeUri    String?   @map("resume_uri")
+  resumeType   String?   @map("resume_type")
+  resumeName   String?   @map("resume_name")
+  resumeSize   String?   @map("resume_size")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   @@index([slug, uuid])
-}
-
-model CareerResume {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  uuid      String   @unique @default(cuid())
-  title     String?
-  email     String?
-  type      String?
-  size      String?
-  link      String?
-  careerId  String   @map("career_id") @db.ObjectId
-  career    Career   @relation(fields: [careerId], references: [id])
-  modified  DateTime @default(now())
-  createdAt DateTime @default(now()) @map("created_at")
-
-  // @@index([ uuid])
 }
 
 type Address {
@@ -120,3 +107,40 @@ type Address {
   state  String
   zip    String
 }
+
+// model Career {
+//   id           String         @id @default(auto()) @map("_id") @db.ObjectId
+//   uuid         String         @unique @default(cuid())
+//   email        String         @unique
+//   title        String
+//   slug         String
+//   company      String
+//   experience   String         @map("experience_years")
+//   currentCTC   String         @map("current_ctc")
+//   expectedCTC  String         @map("expected_ctc")
+//   noticePeriod String         @map("notice_period")
+//   phone        String
+//   portfolio    String?        @map("portfolio")
+//   bio          String?
+//   resumeId     CareerResume[]
+//   createdAt    DateTime       @default(now()) @map("created_at")
+//   updatedAt    DateTime       @updatedAt @map("updated_at")
+
+//   @@index([slug, uuid])
+// }
+
+// model CareerResume {
+//   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+//   uuid      String   @unique @default(cuid())
+//   title     String?
+//   email     String?
+//   type      String?
+//   size      String?
+//   link      String?
+//   careerId  String   @map("career_id") @db.ObjectId
+//   career    Career   @relation(fields: [careerId], references: [id])
+//   modified  DateTime @default(now())
+//   createdAt DateTime @default(now()) @map("created_at")
+
+//   // @@index([ uuid])
+// }

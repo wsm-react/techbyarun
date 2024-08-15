@@ -1,19 +1,103 @@
-export async function CareerFileUpload(formdata: FormData, id: string) {
-    console.log(formdata, id);
+import { ref, uploadBytes, getDownloadURL, getMetadata } from 'firebase/storage'
+import { AppFirebaseStorage } from '@/config/firebase-config'
+import { sanitizeFileName } from '@/lib/function';
 
-    // Extract and process form data
-    const email = formdata.get("email") as string;
-    const mobile = formdata.get("mobile") as string;
-    const password = formdata.get("password") as string;
+export async function CareerFileUpload(formdata: FormData, resFile: File) {
+    // console.log(formdata);
+    const data: Record<string, any> = {};
+    formdata.forEach((value, key) => {
+        data[key] = value;
+    });
 
-    // Create the user in the database
-    // await appDB.user.create({ 
-    //     data: {
-    //         email: email,
-    //         password: password,
-    //         mobile: mobile,
-    //     },
-    // });
+    try {
+        // console.log(resFile);
 
-    // revalidatePath('/admin/user/');
-} 
+        const sanitizedFileName: string = sanitizeFileName(resFile);
+        const fileRef = ref(AppFirebaseStorage, `uploads-alldata/career/${sanitizedFileName}`);
+
+        // Upload the file and get the download URL
+        const resumeUri = await uploadBytes(fileRef, resFile).then(async (data) => {
+            const dataUri = await getDownloadURL(data.ref);
+            // console.log(dataUri);
+            return dataUri;
+        });
+
+        // Add the resume URI to the data object
+        data.resumeUri = resumeUri;
+        data.resumeType = resFile.type.toString();
+        data.resumeName = sanitizedFileName;
+        data.resumeSize = resFile.size.toString();
+
+        // Send the data to your API endpoint
+        const response = await fetch('/api/v1/career', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data), // Send the data as JSON
+        });
+
+        // Optional: Check if the response was successful
+        if (!response.ok) {
+            throw new Error('Failed to submit data');
+        }
+
+        const result = await response.json();
+        console.log('Data submitted successfully:', result);
+
+        // Optionally, handle the response or update the UI
+        // e.g., revalidatePath('/register');
+
+    } catch (error) {
+        console.error('Error submitting data:', error);
+    }
+}
+
+
+// export async function CareerFileUpload(formdata: FormData) {
+//     console.log(formdata);
+//     const data: Record<string, any> = {};
+//     formdata.forEach((value, key) => { data[key] = value });
+
+//     try {
+//         console.log(formdata.get("resume"));
+
+//         const fileData = formdata.get("resume") as File;
+//         const sanitizedFileName: string = sanitizeFileName(fileData);
+//         const fileRef = ref(AppFirebaseStorage, `uploads-alldata/career/${sanitizedFileName}`);
+
+//         const resumeUri = await uploadBytes(fileRef, fileData).then(async (fileData) => {
+//             const dataUri = await getDownloadURL(fileData.ref);
+//             console.log(dataUri);
+
+//             return dataUri;
+//         });
+
+//         const response = await fetch('/api/v1/career', {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify(...data, resume: resumeUri), // Send the data as JSON
+//         });
+
+//         // if (!response.ok) {
+//         //     throw new Error('Failed to submit data');
+//         // }
+
+//         // const result = await response.json();
+//         // console.log('Data submitted successfully:', result);
+
+//         // Optionally, handle the response or update the UI
+//         // e.g., revalidatePath('/admin/user/');
+
+//     } catch (error) {
+//         console.error('Error submitting data:', error);
+//     }
+//     // Create the user in the database
+//     // await appDB.user.create({ 
+//     //     data: {
+//     //         email: email,
+//     //         password: password,
+//     //         mobile: mobile,
+//     //     },
+//     // });
+
+//     // revalidatePath('/register');
+// } 
