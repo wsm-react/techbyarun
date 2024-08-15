@@ -63,6 +63,15 @@ export const ApiCareerSchema = vine.object({
     expectedCTC: vine.number().positive().withoutDecimals().min(1),
     noticePeriod: vine.string(),
     bio: vine.string().optional(),
-    resume: vine.string(),
+    // resume: vine.string(),
     portfolio: vine.string().activeUrl(),
+});
+
+
+export const ApiCareerResumeSchema = vine.object({
+    email: vine.string().trim().email(),
+    title: vine.string().trim(),
+    type: vine.string().trim(),
+    size: vine.string().trim(),
+    link: vine.string().trim(),
 });

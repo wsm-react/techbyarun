@@ -78,24 +78,40 @@ model ContectUs {
 }
 
 model Career {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  uuid         String   @unique @default(cuid())
-  email        String   @unique
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  uuid         String         @unique @default(cuid())
+  email        String         @unique
   title        String
   slug         String
   company      String
-  experience   String   @map("experience_years")
-  currentCTC   String   @map("current_ctc")
-  expectedCTC  String   @map("expected_ctc")
-  noticePeriod String   @map("notice_period")
-  resume       String
+  experience   String         @map("experience_years")
+  currentCTC   String         @map("current_ctc")
+  expectedCTC  String         @map("expected_ctc")
+  noticePeriod String         @map("notice_period")
   phone        String
-  portfolio    String?  @map("portfolio")
+  portfolio    String?        @map("portfolio")
   bio          String?
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  resumeId     CareerResume[]
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
 
   @@index([slug, uuid])
+}
+
+model CareerResume {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  uuid      String   @unique @default(cuid())
+  title     String?
+  email     String?
+  type      String?
+  size      String?
+  link      String?
+  careerId  String   @map("career_id") @db.ObjectId
+  career    Career   @relation(fields: [careerId], references: [id])
+  modified  DateTime @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // @@index([ uuid])
 }
 
 type Address {

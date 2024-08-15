@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { mobileRegExp } from '@/lib/function';
 
-const MAX_MB = 10
-const MAX_UPLOAD_SIZE = 1024 * 1024 * MAX_MB;
+const MAX_RESUME_MB = 2
+const MAX_RESUME_UPLOAD_SIZE = 1024 * 1024 * MAX_RESUME_MB;
 
 const ACCEPTED_IMAGE_TYPES = [
     "image/jpeg",
@@ -11,9 +11,7 @@ const ACCEPTED_IMAGE_TYPES = [
     "image/webp",
 ];
 
-const ACCEPTED_RESUME_TYPES = [
-    "application/pdf", "application/msword"
-];
+const ACCEPTED_RESUME_TYPES = ["application/pdf", "application/msword"];
 
 
 export const CareerFormSchema = z.object({
@@ -56,12 +54,8 @@ export const CareerFormSchema = z.object({
     // resume: z.instanceof(FileList).refine((file) => file?.length == 1, 'File is required.'),
     // resume: z.instanceof(FileList),
     resume: z.instanceof(File)
-        .refine((file) => {
-            return !file || file.size <= MAX_UPLOAD_SIZE;
-        }, `File size must be less than ${MAX_MB} MB`)
-        .refine((file) => {
-            return ACCEPTED_RESUME_TYPES.includes(file.type);
-        }, 'File must be a "PDF" or "word Document"'),
+        .refine((file) => { return !file || file.size <= MAX_RESUME_UPLOAD_SIZE }, `File size must be less than ${MAX_RESUME_MB} MB`)
+        .refine((file) => { return ACCEPTED_RESUME_TYPES.includes(file.type) }, 'File must be a "PDF" or "word Document"'),
 
     // .refine((file) => {
     //     if (file.size === 0 || file.name === undefined) return false;

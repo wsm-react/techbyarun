@@ -24,7 +24,6 @@ export function FormCareer() {
     const [error, setError] = useState<ErrorType | string | null | undefined>(null); // Declare error state
     const [loading, setLoading] = useState<boolean>(false); // State for loading
     const router = useRouter(); // Initialize useRouter
-
     const [getFiles, setFiles] = useState<FileList | null>(null);
 
 
@@ -40,8 +39,8 @@ export function FormCareer() {
             name: "Arun KUmar Gupta",
             phone: "8860566501",
             email: "arun99178@gmail.com",
-            title: "Globe Capital Market Ltd",
-            slug: "Globe Capital Market Ltd",
+            title: "Senior Software Engineer",
+            slug: "senior-software-engineer",
             company: "Globe Capital Market Ltd",
             experience: "20",
             // @ts-ignore
@@ -49,7 +48,6 @@ export function FormCareer() {
             // @ts-ignore
             expectedCTC: "2000",
             noticePeriod: "66666",
-            // resume: "",
             resume: new File([], ''),
             portfolio: "https://www.linkedin.com/in/arun99178/",
             bio: "asasas",
@@ -60,71 +58,33 @@ export function FormCareer() {
 
     const { handleSubmit, control, formState: { isSubmitting, isValid, errors } } = form;
 
-    // const fileRef = form.register("resume");
-
     const onSubmitForm = async (data: CareerType) => {
         setLoading(true); // Start loading
         try {
-            // console.log('Form submitted:', data);
-            // console.log("formState", control.);
-            // const formData = new FormData();
-
-            const formData = new FormData();
-            Object.entries(data).forEach(([key, value]) => {
-                formData.append(key, value as string | Blob);
-            });
-
-            if (getFiles && getFiles.length > 0) {
-                const fileData: File = getFiles[0];
-                const sanitizedFileName: string = sanitizeFileName(fileData);
-                formData.append('resume', new File([fileData], sanitizedFileName)); // Assuming only one file
-                // submitData = { ...data, resume: fileData }
-                // const fileRef = ref(AppFirebaseStorage, `uploads-alldata/career/${sanitizedFileName}`);
-
-                // await uploadBytes(fileRef, fileData).then(async (fileData) => {
-                //     const dataUri = await getDownloadURL(fileData.ref);
-                //     console.log(dataUri);
-                // });
-            }
-
-
-
+            setError(null);
+            setResult(null);
             const baseUrl = `${window.location.protocol}//${window.location.host}`;
             const apiUrl = `${baseUrl}/api/v1/career`;
 
-            // console.log('API URL:', apiUrl);
-            // console.log("sent data", JSON.stringify(data));
-
-            // console.log(JSON.stringify(formData));
-
-            // const datasas = { ...data, resume: "" };
-
-            console.log(formData);
-
+            console.log(data);
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
-                // headers: { 'Content-Type': 'application/json' },
-                // body: formData,
-                // body: JSON.stringify(data),
-                body: formData,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
             });
 
             const responseData = await response.json();
 
             console.log("responseData", responseData);
 
-
             if (!response.ok) {
-                // Handle non-OK responses
                 setError(responseData.message || 'An unknown error occurred.');
                 setResult(null); // Clear any previous results
                 return;
             }
-
             // console.log('API response:', responseData);
 
-            // Handle successful response
             if (responseData.status === 200) {
                 // Redirect to a success page
                 // console.log(responseData.email);
@@ -362,7 +322,26 @@ export function FormCareer() {
                         </FormItem>
                     )}
                 /> */}
-
+                {/* <FormField
+                    control={form.control}
+                    name="resume"
+                    render={({ field: { value, onChange, ...fieldProps } }) => (
+                        <FormItem>
+                            <FormLabel>Resume (In PDF only max size 2 MB)</FormLabel>
+                            <FormControl>
+                                <Input
+                                    autoComplete="off" className='h-14 px-6' type="file" placeholder="Upload 1 supported file: PDF. Max 2 MB."
+                                    {...fieldProps}
+                                    onChange={(e) => {
+                                        handleFilesChange(e);
+                                        // field.onChange(e.target.value);
+                                    }}
+                                />
+                            </FormControl>
+                            {errors.resume && (<FormMessage className='dark:text-red-300'>{typeof errors.resume.message === 'string' ? errors.resume.message : 'An error occurred'}</FormMessage>)}
+                        </FormItem>
+                    )}
+                /> */}
                 {/* <FormField
                     control={form.control}
                     name="resume"
@@ -386,7 +365,6 @@ export function FormCareer() {
                 <FormField
                     control={form.control}
                     name="resume"
-                    // render={({ field: { value, onChange, ...fieldProps } }) => (
                     render={({ field: { value, onChange, ...fieldProps } }) => (
                         <FormItem>
                             <FormLabel>Resume (In PDF only max size 2 MB)</FormLabel>
@@ -395,8 +373,6 @@ export function FormCareer() {
                                     autoComplete="off" className='h-14 px-6' type="file" placeholder="Upload 1 supported file: PDF. Max 2 MB."
                                     {...fieldProps}
                                     onChange={(e) => {
-                                        // console.log(e);
-
                                         handleFilesChange(e);
                                         onChange(e.target.files?.[0]);
                                     }}

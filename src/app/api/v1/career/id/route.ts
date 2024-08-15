@@ -1,0 +1,96 @@
+// @tsnocheck
+
+import { NextRequest, NextResponse } from 'next/server';
+import vine, { errors } from '@vinejs/vine';
+
+
+import { JSONAPIErrorReporter } from '@/validator/error-reporter';
+import { filterUndefinedAndNull } from '@/lib/function';
+import { CareerPayload } from '@/types/api-interface';
+import { ApiCareerResumeSchema, ApiCareerSchema } from '@/validator/vine-schema';
+import appDB from '@/config/database';
+import { EnvApp, EnvMailer } from '@/helpers/constants';
+
+
+
+export async function POST(req: NextRequest, res: NextResponse) {
+    try {
+
+        const payload: CareerPayload = await req.json();
+
+        console.log("Validation payload:", payload);
+
+        const validator = vine.compile(ApiCareerResumeSchema);
+        const output = await validator.validate(payload, {
+            errorReporter: () => new JSONAPIErrorReporter()
+        });
+
+        // console.log("Validation output:", output);
+
+        // const validOutput = {
+        //     ...output,
+        //     currentCTC: output.currentCTC.toString(),
+        //     expectedCTC: output.expectedCTC.toString(),
+        // }
+
+        // const existingEmail = await appDB.career.findFirst({
+        //     where: { email: validOutput.email },
+        // });
+
+        // if (existingEmail) {
+        //     const leadCreatedAt = new Date(existingEmail.createdAt);
+        //     const now = new Date();
+        //     const daysDifference = Math.floor((now.getTime() - leadCreatedAt.getTime()) / (1000 * 60 * 60 * 24));
+
+        //     if (daysDifference < 7) {
+        //         return NextResponse.json(
+        //             {
+        //                 ...validOutput,
+        //                 success: false,
+        //                 status: 200,
+        //                 message: 'Thank you for reaching out to us. We have already received your details. Please allow us 7 days before submitting another request.',
+        //             }, { status: 200 });
+
+        //     } else {
+        //         const updatedLead = await appDB.career.update({
+        //             where: {
+        //                 email: validOutput.email,
+        //             },
+        //             // @ts-ignore
+        //             data: filterUndefinedAndNull(validOutput as CareerPayload),
+        //         });
+
+        //         return NextResponse.json({
+        //             // ...updatedLead,
+        //             success: true,
+        //             status: 201,
+        //             message: 'Your contact information has been successfully updated. Thank you for reaching out to us.',
+        //         }, { status: 201 });
+        //     }
+        // }
+
+        // const newLeadData = filterUndefinedAndNull(validOutput) as CareerPayload;
+
+        // const newLead = await appDB.career.create({
+        //     // @ts-ignore
+        //     data: newLeadData,
+        // });
+
+        // return NextResponse.json({
+        //     ...newLead,
+        //     success: true,
+        //     status: 201,
+        //     message: `Thank you for applying for the position of ${newLeadData.title} at ${process.env.SITE_DOMIN}. We appreciate your interest in joining our team. Our recruitment team will review your application and get back to you soon. If you have any questions or need further information, feel free to reach out to us.`,
+        // }, { status: 201 });
+
+    } catch (error: any) {
+        if (error instanceof errors.E_VALIDATION_ERROR) {
+            console.log("error.status ", error.status);
+
+            return NextResponse.json(
+                { success: false, status: error.status, message: error.messages },
+                { status: error.status }
+            );
+        }
+    }
+}
