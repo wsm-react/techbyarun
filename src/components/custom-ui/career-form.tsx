@@ -20,12 +20,12 @@ import { sanitizeFileName } from '@/lib/function'
 import { CareerFileUpload } from '@/actions/career'
 
 export function FormCareer() {
+    const router = useRouter(); // Initialize useRouter
     const [result, setResult] = useState<ErrorType | null>(null); // Declare result state
     const [error, setError] = useState<ErrorType | string | null | undefined>(null); // Declare error state
     const [loading, setLoading] = useState<boolean>(false); // State for loading
-    const router = useRouter(); // Initialize useRouter
     const [getFiles, setFiles] = useState<FileList | null>(null);
-
+    const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
 
     const handleFilesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,10 +48,12 @@ export function FormCareer() {
             // @ts-ignore
             expectedCTC: "2000",
             noticePeriod: "66666",
-            resumeUri: new File([], ''),
+            // resumeUri: new File([], ''),
+            resumeUri: "",
             portfolio: "https://www.linkedin.com/in/arun99178/",
             bio: "asasas",
             terms: true,
+            // recaptchaToken: "",
         },
         mode: 'onChange',
     });
@@ -73,7 +75,17 @@ export function FormCareer() {
                 const sanitizedFileName: string = sanitizeFileName(fileData);
                 formData.append('resumeUri', new File([fileData], sanitizedFileName));
                 // console.log("fileData", fileData);
-                CareerFileUpload(formData, fileData);
+                CareerFileUpload(formData, fileData).then((resData) => {
+                    console.log("ajsajsh", resData);
+                    if (resData.status === 200) {
+                        setResult(resData);
+                        setError(null);
+                    } else {
+                        setResult(resData);
+                        setError(null);
+                    }
+                    setResult(resData);
+                });
             }
 
         } catch (err) {
@@ -275,45 +287,7 @@ export function FormCareer() {
                         </FormItem>
                     )}
                 />
-                {/* <FormField
-                    control={form.control}
-                    name="resume"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Resume (In PDF only max size 2 MB)</FormLabel>
-                            <FormControl>
-                                <ImageUpload
-                                    {...field}
-                                    value={field.value}
-                                    onChange={field.onChange}
-                                    onRemove={handleRemoveImage}
-                                    images={[]} // Pre-existing images if any
-                                />
-                            </FormControl>
-                            {errors.resume && <FormMessage className='dark:text-red-300'>{errors.resume.message}</FormMessage>}
-                        </FormItem>
-                    )}
-                /> */}
-                {/* <FormField
-                    control={form.control}
-                    name="resume"
-                    render={({ field: { value, onChange, ...fieldProps } }) => (
-                        <FormItem>
-                            <FormLabel>Resume (In PDF only max size 2 MB)</FormLabel>
-                            <FormControl>
-                                <Input
-                                    autoComplete="off" className='h-14 px-6' type="file" placeholder="Upload 1 supported file: PDF. Max 2 MB."
-                                    {...fieldProps}
-                                    onChange={(e) => {
-                                        handleFilesChange(e);
-                                        // field.onChange(e.target.value);
-                                    }}
-                                />
-                            </FormControl>
-                            {errors.resume && (<FormMessage className='dark:text-red-300'>{typeof errors.resume.message === 'string' ? errors.resume.message : 'An error occurred'}</FormMessage>)}
-                        </FormItem>
-                    )}
-                /> */}
+
                 {/* <FormField
                     control={form.control}
                     name="resume"
@@ -342,7 +316,7 @@ export function FormCareer() {
                             <FormLabel>Resume (In PDF only max size 2 MB)</FormLabel>
                             <FormControl>
                                 <Input
-                                    autoComplete="off" className='h-14 px-6' type="file" placeholder="Upload 1 supported file: PDF. Max 2 MB."
+                                    autoComplete="off" className='h-14 px-6' multiple={false} type="file" placeholder="Upload 1 supported file: PDF. Max 2 MB."
                                     {...fieldProps}
                                     onChange={(e) => {
                                         handleFilesChange(e);
@@ -369,6 +343,7 @@ export function FormCareer() {
                         </FormItem>
                     )}
                 />
+                {/* <ReCaptcha onChange={setToken} /> */}
                 <FormField control={form.control}
                     name="terms"
                     render={({ field }) => (
@@ -392,6 +367,22 @@ export function FormCareer() {
                             </div>
                         </FormItem>
                     )} />
+                {/* <FormField
+                    control={control}
+                    name="recaptchaToken"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>reCAPTCHA</FormLabel>
+                            <FormControl>
+                                <ReCaptcha {...field} onChange={setRecaptchaToken} />
+                            </FormControl>
+                            {errors.recaptchaToken && <FormMessage className='dark:text-red-300'>{errors.recaptchaToken.message}</FormMessage>}
+                        </FormItem>
+                    )}
+                /> */}
+
+
+                {/* <ReCaptcha onChange={setToken} /> */}
                 {result && renderContentBasedOnStatus(result)}
 
                 {error && (

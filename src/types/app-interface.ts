@@ -2,6 +2,8 @@
 import { ParsedUrlQueryInput } from 'node:querystring';
 import { ComponentType } from 'react';
 
+export type ErrorType = ResultType | string;
+
 interface Href {
     pathname: string;
     query?: ParsedUrlQueryInput;
@@ -37,5 +39,7 @@ export interface ResultType {
     message: string | Record<string, unknown>;
 }
 
-
-export type ErrorType = ResultType | string;
+export interface ReCaptchaProps {
+    onChange: (token: string | null) => void;
+    [key: string]: any; // Accept any additional props
+}

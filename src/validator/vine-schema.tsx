@@ -53,6 +53,7 @@ export const ApiContectUsSchema = vine.object({
 // });
 
 export const ApiCareerSchema = vine.object({
+    name: vine.string().trim(),
     email: vine.string().trim().email(),
     phone: vine.string().trim().mobile().minLength(10).regex(mobileRegExp),
     title: vine.string(),

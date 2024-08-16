@@ -12,7 +12,7 @@ const ACCEPTED_IMAGE_TYPES = [
 ];
 
 const ACCEPTED_RESUME_TYPES = ["application/pdf", "application/msword"];
-
+const isServer = typeof window === 'undefined';
 
 export const CareerFormSchema = z.object({
     name: z.string()
@@ -53,23 +53,19 @@ export const CareerFormSchema = z.object({
     // resume: z.string().url({ message: "Invalid url" }),
     // resume: z.instanceof(FileList).refine((file) => file?.length == 1, 'File is required.'),
     // resume: z.instanceof(FileList),
-    resumeUri: z.instanceof(File)
-        .refine((file) => { return !file || file.size <= MAX_RESUME_UPLOAD_SIZE }, `File size must be less than ${MAX_RESUME_MB} MB`)
-        .refine((file) => { return ACCEPTED_RESUME_TYPES.includes(file.type) }, 'File must be a "PDF" or "word Document"'),
+    // resumeUri: z.instanceof(File)
+    //     .refine((file) => { return !file || file.size <= MAX_RESUME_UPLOAD_SIZE }, `File size must be less than ${MAX_RESUME_MB} MB`)
+    //     .refine((file) => { return ACCEPTED_RESUME_TYPES.includes(file.type) }, 'File must be a "PDF" or "word Document"'),
 
-    // .refine((file) => {
-    //     if (file.size === 0 || file.name === undefined) return false;
-    //     else return true;
-    // }, "Please update or add new image.")
-    // .refine(
-    //     (file) => ACCEPTED_RESUME_TYPES.includes(file?.type),
-    //     ".jpg, .jpeg, .png and .webp files are accepted."
-    // )
-    // .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 5MB.`),
+    resumeUri: z.any()
+        .refine((file) => file.size > 0, 'Image is required')
+        .refine((file) => file.size <= MAX_RESUME_UPLOAD_SIZE, `File size must be less than ${MAX_RESUME_MB} MB`)
+        .refine((file) => { return ACCEPTED_RESUME_TYPES.includes(file.type) }, 'File must be a "PDF" or "word Document"'),
 
     portfolio: z.string().url({ message: "Invalid url" }),
     // terms: z.boolean().refine(val => val === true, { message: "You must accept the terms and conditions" })
     terms: z.coerce.boolean().refine(val => val === true, { message: "You must accept the terms and conditions" }),
+    // recaptchaToken: z.string().min(1, 'reCAPTCHA token is required'),
 });
 
 export type CareerType = z.infer<typeof CareerFormSchema>;

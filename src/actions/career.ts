@@ -43,6 +43,8 @@ export async function CareerFileUpload(formdata: FormData, resFile: File) {
         const result = await response.json();
         console.log('Data submitted successfully:', result);
 
+        return result;
+
         // Optionally, handle the response or update the UI
         // e.g., revalidatePath('/register');
 
