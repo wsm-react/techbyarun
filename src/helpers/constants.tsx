@@ -23,6 +23,10 @@ export class EnvFirebase {
     static MEASUREMENT_ID: string = process.env.FIREBASE_MEASUREMENT_ID || "";
 };
 
+
+export const dominName = process.env.NEXT_PUBLIC_SITE_DOMIN ? process.env.NEXT_PUBLIC_SITE_DOMIN : process.env.NEXT_PUBLIC_SITE_DOMIN;
+export const dominUrl = process.env.NEXT_PUBLIC_SITE_URL ? process.env.NEXT_PUBLIC_SITE_URL : process.env.NEXT_PUBLIC_SITE_URL;
+
 // export class EnvEmails {
 //     static SMTP_HOST: string = process.env.GODADDY_SMTP_HOST!
 //     static SMTP_PORT: string = process.env.GODADDY_SMTP_PORT!

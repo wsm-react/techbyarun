@@ -1,3 +1,4 @@
+import { dominName } from '@/helpers/constants';
 
 
 export function EscapeRegExp(str: string) {
@@ -35,6 +36,7 @@ export function ParseUrlSearchParams(searchParams: URLSearchParams): Record<stri
   for (const [key, value] of searchParams.entries()) {
     paramsObject[key] = value;
   }
+
   return paramsObject;
 }
 
@@ -59,7 +61,10 @@ export function filterUndefinedAndNull<T extends Record<string, any>>(obj: T): P
 //   return fileName;
 // }
 
-export function sanitizeFileName(file: File, prefix: string = 'clinchwealth'): string {
+// export function sanitizeFileName(file: File, prefix: string = '', suffix: string = ''): string {
+export function sanitizeFileName(file: File, { prefix = '', suffix = '' }: { prefix?: string, suffix?: string } = {}): string {
+  // const dominName = process.env.SITE_DOMIN ? process.env.SITE_DOMIN : process.env.SITE_DOMIN;
+
   if (!(file instanceof File)) {
     throw new Error('Input must be a File object.');
   }
@@ -72,6 +77,6 @@ export function sanitizeFileName(file: File, prefix: string = 'clinchwealth'): s
   // Split the file name into name and extension
   const [name, extension] = fileName.split('.');
   // Construct the new file name
-  const newFileName = `${prefix}-${name}-${dateString}.${extension || ''}`;
+  const newFileName = `${dominName}-${prefix}-${suffix}-${dateString}.${extension || ''}`;
   return newFileName.toLowerCase();
 }

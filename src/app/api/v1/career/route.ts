@@ -11,7 +11,8 @@ import { ApiCareerSchema } from '@/validator/vine-schema';
 import appDB from '@/config/database';
 import { EnvApp, EnvMailer } from '@/helpers/constants';
 import { SendEmailSingleRecipients, SendEmailWithAttachmentToRecipients } from '@/config/nodemailer';
-import { RenderMailTemplate } from '@/mailer/render-template';
+import { RenderMailTemplate } from '@/helpers/mailer-template';
+
 
 export async function POST(req: NextRequest, res: NextResponse) {
     try {
@@ -25,8 +26,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
         const output = await validator.validate(payload, {
             errorReporter: () => new JSONAPIErrorReporter()
         });
+
         // console.log("Validation output:", output);
-        const dataHtml = await RenderMailTemplate('contact-us-mailer.ejs', { title: "contact us email", name: output.name, email: output.email, mobile: output.phone, });
+
+        const dataHtml = await RenderMailTemplate('career.ejs', { title: "contact us email", name: output.name, email: output.email, mobile: output.phone, });
 
         const validOutput = {
             ...output,
@@ -39,12 +42,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
         });
 
 
-        const mailRes = await SendEmailWithAttachmentToRecipients({
-            to: output.email,
-            subject: 'Thank You for Contacting Clinch Wealth',
-            html: dataHtml,
-            bcc: ["clinchwealth@gmail.com", "info@clinchwealth.com"]
-        });
+
+
+        // console.log("mailRes", mailRes);
+
 
         if (existingEmail) {
             // console.log(existingEmail);
@@ -75,8 +76,20 @@ export async function POST(req: NextRequest, res: NextResponse) {
                     data: filterUndefinedAndNull(validOutput as CareerPayload),
                 });
 
+                const mailRes = await SendEmailWithAttachmentToRecipients({
+                    to: output.email,
+                    subject: 'Thank You for Contacting Clinch Wealth',
+                    html: dataHtml,
+                    bcc: ["clinchwealth@gmail.com", "info@clinchwealth.com"],
+                    attachment: {
+                        filename: output.resumeName,
+                        path: output.resumeUri,
+                    }
+                });
+
                 return NextResponse.json({
                     ...updatedLead,
+                    ...mailRes,
                     success: true,
                     status: 201,
                     message: `Thank you for applying for the position of ${updatedLead.title} at ${process.env.SITE_DOMIN}. We appreciate your interest in joining our team. Our recruitment team will review your application and get back to you soon. If you have any questions or need further information, feel free to reach out to us.`,
@@ -91,8 +104,20 @@ export async function POST(req: NextRequest, res: NextResponse) {
             data: newLeadData,
         });
 
+        const mailRes = await SendEmailWithAttachmentToRecipients({
+            to: output.email,
+            subject: 'Thank You for Contacting Clinch Wealth',
+            html: dataHtml,
+            bcc: ["clinchwealth@gmail.com", "info@clinchwealth.com"],
+            attachment: {
+                filename: output.resumeName,
+                path: output.resumeUri,
+            }
+        });
+
         return NextResponse.json({
             ...newLead,
+            ...mailRes,
             success: true,
             status: 201,
             message: `Thank you for applying for the position of ${newLeadData.title} at ${process.env.SITE_DOMIN}. We appreciate your interest in joining our team. Our recruitment team will review your application and get back to you soon. If you have any questions or need further information, feel free to reach out to us.`,

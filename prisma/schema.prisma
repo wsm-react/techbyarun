@@ -80,8 +80,9 @@ model ContectUs {
 model Career {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
   uuid         String   @unique @default(cuid())
-  title        String
-  slug         String
+  title        String?
+  slug         String?
+  name         String?
   email        String   @unique
   phone        String
   portfolio    String?  @map("portfolio")
@@ -90,11 +91,11 @@ model Career {
   experience   String   @map("experience_years")
   currentCTC   String   @map("current_ctc")
   expectedCTC  String   @map("expected_ctc")
-  noticePeriod String?   @map("notice_period")
-  resumeUri    String?   @map("resume_uri")
-  resumeType   String?   @map("resume_type")
-  resumeName   String?   @map("resume_name")
-  resumeSize   String?   @map("resume_size")
+  noticePeriod String?  @map("notice_period")
+  resumeUri    String?  @map("resume_uri")
+  resumeType   String?  @map("resume_type")
+  resumeName   String?  @map("resume_name")
+  resumeSize   String?  @map("resume_size")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 

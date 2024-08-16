@@ -1,8 +1,11 @@
 import { ref, uploadBytes, getDownloadURL, getMetadata } from 'firebase/storage'
 import { AppFirebaseStorage } from '@/config/firebase-config'
 import { sanitizeFileName } from '@/lib/function';
+import { dominName } from '@/helpers/constants';
 
-export async function CareerFileUpload(formdata: FormData, resFile: File) {
+
+
+export async function CareerFileUpload(formdata: FormData, resumeFile: File) {
     // console.log(formdata);
     const data: Record<string, any> = {};
     formdata.forEach((value, key) => {
@@ -11,12 +14,13 @@ export async function CareerFileUpload(formdata: FormData, resFile: File) {
 
     try {
         // console.log(resFile);
+        const prefix = data.slug.replace(/[^a-zA-Z0-9.]/g, '-');
 
-        const sanitizedFileName: string = sanitizeFileName(resFile);
+        const sanitizedFileName: string = sanitizeFileName(resumeFile, { prefix: prefix, suffix: data.phone });
         const fileRef = ref(AppFirebaseStorage, `uploads-alldata/career/${sanitizedFileName}`);
 
         // Upload the file and get the download URL
-        const resumeUri = await uploadBytes(fileRef, resFile).then(async (data) => {
+        const resumeUri = await uploadBytes(fileRef, resumeFile).then(async (data) => {
             const dataUri = await getDownloadURL(data.ref);
             // console.log(dataUri);
             return dataUri;
@@ -24,9 +28,9 @@ export async function CareerFileUpload(formdata: FormData, resFile: File) {
 
         // Add the resume URI to the data object
         data.resumeUri = resumeUri;
-        data.resumeType = resFile.type.toString();
+        data.resumeType = resumeFile.type.toString();
         data.resumeName = sanitizedFileName;
-        data.resumeSize = resFile.size.toString();
+        data.resumeSize = resumeFile.size.toString();
 
         // Send the data to your API endpoint
         const response = await fetch('/api/v1/career', {

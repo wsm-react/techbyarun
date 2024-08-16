@@ -35,27 +35,48 @@ export function FormCareer() {
 
     const form = useForm<CareerType>({
         resolver: zodResolver(CareerFormSchema),
+        mode: 'onChange',
         defaultValues: {
-            name: "Arun KUmar Gupta",
-            phone: "8860566501",
-            email: "arun99178@gmail.com",
-            title: "Senior Software Engineer",
-            slug: "senior-software-engineer",
-            company: "Globe Capital Market Ltd",
-            experience: "20",
+            name: "",
+            phone: "",
+            email: "",
+            title: "",
+            slug: "",
+            company: "",
+            experience: "",
             // @ts-ignore
-            currentCTC: "20000",
+            currentCTC: "",
             // @ts-ignore
-            expectedCTC: "2000",
-            noticePeriod: "66666",
+            expectedCTC: "",
+            noticePeriod: "",
             // resumeUri: new File([], ''),
             resumeUri: "",
-            portfolio: "https://www.linkedin.com/in/arun99178/",
-            bio: "asasas",
+            portfolio: "",
+            bio: "",
             terms: true,
             // recaptchaToken: "",
         },
-        mode: 'onChange',
+        // defaultValues: {
+        //     name: "Arun KUmar Gupta",
+        //     phone: "8860566501",
+        //     email: "arun99178@gmail.com",
+        //     title: "Senior Software Engineer",
+        //     slug: "senior-software-engineer",
+        //     company: "Globe Capital Market Ltd",
+        //     experience: "20",
+        //     // @ts-ignore
+        //     currentCTC: "20000",
+        //     // @ts-ignore
+        //     expectedCTC: "2000",
+        //     noticePeriod: "66666",
+        //     // resumeUri: new File([], ''),
+        //     resumeUri: "",
+        //     portfolio: "https://www.linkedin.com/in/arun99178/",
+        //     bio: "asasas",
+        //     terms: true,
+        //     // recaptchaToken: "",
+        // },
+
     });
 
     const { handleSubmit, control, formState: { isSubmitting, isValid, errors } } = form;
@@ -76,7 +97,8 @@ export function FormCareer() {
                 formData.append('resumeUri', new File([fileData], sanitizedFileName));
                 // console.log("fileData", fileData);
                 CareerFileUpload(formData, fileData).then((resData) => {
-                    console.log("ajsajsh", resData);
+                    console.log("resData", resData);
+
                     if (resData.status === 200) {
                         setResult(resData);
                         setError(null);
