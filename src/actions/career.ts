@@ -4,7 +4,6 @@ import { sanitizeFileName } from '@/lib/function';
 import { dominName } from '@/helpers/constants';
 
 
-
 export async function CareerFileUpload(formdata: FormData, resumeFile: File) {
     // console.log(formdata);
     const data: Record<string, any> = {};

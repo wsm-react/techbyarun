@@ -102,6 +102,32 @@ model Career {
   @@index([slug, uuid])
 }
 
+// model Job {
+//   id                  String              @id @default(auto()) @map("_id") @db.ObjectId
+//   uuid                String              @unique @default(cuid())
+//   title               String
+//   location            String
+//   experience          String
+//   slug                String              @unique
+//   jobResponsibilities JobResponsibility[]
+//   createdAt           DateTime            @default(now()) @map("created_at")
+//   updatedAt           DateTime            @updatedAt @map("updated_at")
+
+//   @@index([slug, uuid])
+// }
+
+// model JobResponsibility {
+//   id           String @id @default(auto()) @map("_id") @db.ObjectId
+//   uuid         String @unique @default(cuid())
+//   description  String
+//   requirements String
+//   jobId        String @map("job_id") @db.ObjectId
+//   job         Jobs    @relation(fields: [jobId], references: [id])
+
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
+// }
+
 type Address {
   street String
   city   String
@@ -109,39 +135,152 @@ type Address {
   zip    String
 }
 
-// model Career {
-//   id           String         @id @default(auto()) @map("_id") @db.ObjectId
-//   uuid         String         @unique @default(cuid())
-//   email        String         @unique
-//   title        String
-//   slug         String
-//   company      String
-//   experience   String         @map("experience_years")
-//   currentCTC   String         @map("current_ctc")
-//   expectedCTC  String         @map("expected_ctc")
-//   noticePeriod String         @map("notice_period")
-//   phone        String
-//   portfolio    String?        @map("portfolio")
-//   bio          String?
-//   resumeId     CareerResume[]
-//   createdAt    DateTime       @default(now()) @map("created_at")
-//   updatedAt    DateTime       @updatedAt @map("updated_at")
+model Jobs {
+  id                    String                 @id @default(auto()) @map("_id") @db.ObjectId
+  uuid                  String                 @unique @default(cuid())
+  slug                  String                 @unique
+  employeeTypes         String[]               @map("employee_types")
+  employmentCategories  String[]               @map("employment_categories")
+  status                String
+  jobTitles             JobTitle[]
+  educationRequirements EducationRequirement[]
+  jobClassification     JobClassification?
+  jobDescriptions       JobDescription[]
+  // jobRequirements       JobRequirement[]
 
-//   @@index([slug, uuid])
+  // Many-to-many relations
+  skills        JobSkill[]
+  workLocations JobWorkLocation[]
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  // LocalId   LocalId[]
+
+  @@index([id, slug])
+}
+
+// model JobRequirement {
+//   id          String @id @default(auto()) @map("_id") @db.ObjectId
+//   uuid        String @unique @default(cuid())
+//   requirement String
+//   importance  String
+//   jobId       String @map("job_id") @db.ObjectId
+//   job         Jobs   @relation(fields: [jobId], references: [id])
 // }
 
-// model CareerResume {
-//   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-//   uuid      String   @unique @default(cuid())
-//   title     String?
-//   email     String?
-//   type      String?
-//   size      String?
-//   link      String?
-//   careerId  String   @map("career_id") @db.ObjectId
-//   career    Career   @relation(fields: [careerId], references: [id])
-//   modified  DateTime @default(now())
-//   createdAt DateTime @default(now()) @map("created_at")
+model JobTitle {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  uuid        String @unique @default(cuid())
+  title       String
+  description String
+  jobId       String @map("job_id") @db.ObjectId
+  job         Jobs   @relation(fields: [jobId], references: [id])
+}
 
-//   // @@index([ uuid])
-// }
+model Skill {
+  id              String  @id @default(auto()) @map("_id") @db.ObjectId
+  uuid            String  @unique @default(cuid())
+  context         String
+  displayName     String  @map("display_name")
+  experienceYears Int     @map("experience_years")
+  importance      String
+  isValidated     Boolean @map("is_validated")
+  level           String
+  type            String
+
+  jobs JobSkill[]
+}
+
+model WorkLocation {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  uuid      String      @unique @default(cuid())
+  isCurrent Boolean     @map("is_current")
+  priority  Int
+  address   FullAddress
+
+  jobs JobWorkLocation[]
+}
+
+type FullAddress {
+  addressLineOne          String @map("address_line_one")
+  addressLineTwo          String @map("address_line_two")
+  administrativeArea      String @map("administrative_area")
+  languageCode            String @map("language_code")
+  locality                String
+  postalCode              String @map("postal_code")
+  propertyNumber          String @map("property_number")
+  propertyNumberExtension String @map("property_number_extension")
+  regionCode              String @map("region_code")
+  sortingCode             String @map("sorting_code")
+  streetName              String @map("street_name")
+  sublocality             String
+}
+
+model EducationRequirement {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  uuid        String   @unique @default(cuid())
+  degreeTypes String[] @map("degree_types")
+  importance  String
+  jobId       String   @map("job_id") @db.ObjectId
+  job         Jobs     @relation(fields: [jobId], references: [id])
+}
+
+model JobClassification {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  uuid        String @unique @default(cuid())
+  category    String
+  department  String
+  environment String
+  industry    String
+  subcategory String @map("sub_category")
+
+  jobId String @unique @map("job_id") @db.ObjectId
+  job   Jobs   @relation(fields: [jobId], references: [id])
+}
+
+model JobDescription {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  uuid             String    @unique @default(cuid())
+  benefits         Benefit[]
+  description      String
+  qualifications   String
+  responsibilities String
+  type             String
+  jobId            String    @map("job_id") @db.ObjectId
+  job              Jobs      @relation(fields: [jobId], references: [id])
+}
+
+model Benefit {
+  id               String         @id @default(auto()) @map("_id") @db.ObjectId
+  uuid             String         @unique @default(cuid())
+  context          String
+  type             String
+  jobDescriptionId String         @map("job_description_id") @db.ObjectId
+  jobDescription   JobDescription @relation(fields: [jobDescriptionId], references: [id])
+}
+
+// Intermediate models for many-to-many relations
+
+model JobSkill {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  uuid    String @unique @default(cuid())
+  jobId   String @map("job_id") @db.ObjectId
+  skillId String @map("skill_id") @db.ObjectId
+
+  job   Jobs  @relation(fields: [jobId], references: [id])
+  skill Skill @relation(fields: [skillId], references: [id])
+
+  @@unique([jobId, skillId])
+}
+
+model JobWorkLocation {
+  id             String @id @default(auto()) @map("_id") @db.ObjectId
+  uuid           String @unique @default(cuid())
+  jobId          String @map("job_id") @db.ObjectId
+  workLocationId String @map("work_location_id") @db.ObjectId
+
+  job          Jobs         @relation(fields: [jobId], references: [id])
+  workLocation WorkLocation @relation(fields: [workLocationId], references: [id])
+
+  @@unique([jobId, workLocationId])
+}
