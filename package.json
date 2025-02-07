@@ -24,7 +24,7 @@
         "prisma:pull": "npx prisma db pull --force",
         "prisma:studio": "npx prisma studio",
         "vercel": "vercel --prod",
-        "ngrok:": "ngrok http --domain=polecat-peaceful-gradually.ngrok-free.app 3000"
+        "ngrok": "ngrok http --domain=polecat-peaceful-gradually.ngrok-free.app 3000"
     },
     "prisma": {
         "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
