@@ -17,7 +17,7 @@ const AnmateStair: React.FC = () => {
 
 
     const reverseIndex = (index: number) => {
-        const totalSteps = 8;
+        const totalSteps = 6;
 
         return totalSteps - index - 1;
     }
@@ -25,7 +25,7 @@ const AnmateStair: React.FC = () => {
 
     return (
         <>
-            {[...Array(8)].map((_, index) => {
+            {[...Array(6)].map((_, index) => {
                 return (<motion.div
                     key={index}
                     variants={stairAnimate}
@@ -37,7 +37,7 @@ const AnmateStair: React.FC = () => {
                         ease: "easeInOut",
                         delay: reverseIndex(index) * 0.03
                     }}
-                    className='h-full w-full bg-slate-950  relative'
+                    className='h-full w-full bg-blue-600  relative'
                 />)
             })}
         </>
