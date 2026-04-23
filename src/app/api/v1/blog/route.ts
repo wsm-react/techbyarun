@@ -2,39 +2,33 @@ import appDB from '@/config/database';
 import { NextRequest, NextResponse } from 'next/server';
 
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest) {
     try {
-        const { name, email, mobile, password } = await req.json();
-        // console.log(name, email, mobile, password);
-
-        if (!name || !email || !mobile || !password) {
-            return NextResponse.json({
-                success: false,
-                status: 422,
-                message: 'Not Valid Data',
-            }, { status: 422 });
-        }
-
-
-        const newUser = await appDB.user.create({ data: { name, email, mobile, password } });
-
-        console.log(newUser);
-
+        const posts = await appDB.blogPost.findMany({
+            where: { published: true },
+            select: {
+                id: true,
+                slug: true,
+                title: true,
+                subTitle: true,
+                createdAt: true,
+                updatedAt: true,
+                author: { select: { id: true, name: true } },
+            },
+            orderBy: { createdAt: 'desc' },
+        });
 
         return NextResponse.json({
             success: true,
-            status: 201,
-            message: 'User created successfully',
-            data: newUser,
-        }, { status: 201 });
+            status: 200,
+            data: posts,
+        }, { status: 200 });
 
     } catch (error: any) {
-        // console.log(error);
         return NextResponse.json({
             success: false,
             status: 500,
             error: error.message || "Internal server error",
         }, { status: 500 });
-
     }
 }

@@ -6,8 +6,10 @@ import vine, { errors } from '@vinejs/vine';
 import { ContectUsPayload } from '@/types/api-interface';
 import { JSONAPIErrorReporter } from '@/validator/error-reporter';
 import { filterUndefinedAndNull } from '@/lib/function';
+import appDB from '@/config/database';
+import { ApiContectUsSchema } from '@/validator/vine-schema';
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
     try {
 
         const payload: ContectUsPayload = await req.json();

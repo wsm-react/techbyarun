@@ -34,20 +34,8 @@ export const CareerFormSchema = z.object({
     company: z.string(),
     experience: z.string(),
     // currentCTC: z.number({ message: "Enter current annual salary, Example if 5LPA mention 500000" }).nullable(),
-    currentCTC: z.preprocess(
-        (input) => {
-            const processed = z.string().regex(/^\d+$/).transform(Number).safeParse(input);
-            return processed.success ? processed.data : input;
-        },
-        z.number({ message: "Enter current annual salary, Example if 5LPA mention 500000" }).min(0),
-    ),
-    expectedCTC: z.preprocess(
-        (input) => {
-            const processed = z.string().regex(/^\d+$/).transform(Number).safeParse(input);
-            return processed.success ? processed.data : input;
-        },
-        z.number({ message: "Enter expected annual salary, Example if 5LPA mention 500000" }).min(0),
-    ),
+    currentCTC: z.coerce.number({ message: "Enter current annual salary, Example if 5LPA mention 500000" }).min(0),
+    expectedCTC: z.coerce.number({ message: "Enter expected annual salary, Example if 5LPA mention 500000" }).min(0),
     noticePeriod: z.string(),
     bio: z.string().optional(),
     // resume: z.string().url({ message: "Invalid url" }),

@@ -1,47 +1,43 @@
 import { motion } from 'framer-motion';
 
-
-
 const AnmateStair: React.FC = () => {
+    const totalSteps = 6;
+
     const stairAnimate = {
-        inital: {
-            top: "0%"
+        initial: {
+            top: '0%',
         },
         animate: {
-            top: "100%"
+            top: '100%',
         },
         exit: {
-            top: ["100%", "0"]
-        }
-    }
+            top: ['100%', '0%'],
+        },
+    };
 
-
-    const reverseIndex = (index: number) => {
-        const totalSteps = 6;
-
-        return totalSteps - index - 1;
-    }
-
+    const reverseIndex = (index: number) => totalSteps - index - 1;
 
     return (
         <>
-            {[...Array(6)].map((_, index) => {
-                return (<motion.div
+            {[...Array(totalSteps)].map((_, index) => (
+
+
+                <motion.div
                     key={index}
                     variants={stairAnimate}
                     initial="initial"
                     animate="animate"
                     exit="exit"
                     transition={{
-                        duration: 0.2,
-                        ease: "easeInOut",
-                        delay: reverseIndex(index) * 0.03
+                        duration: 0.35,
+                        ease: [0.22, 1, 0.36, 1],
+                        delay: reverseIndex(index) * 0.03,
                     }}
-                    className='h-full w-full bg-blue-600  relative'
-                />)
-            })}
+                    className="relative h-full w-full bg-primary"
+                />
+            ))}
         </>
     );
-}
+};
 
 export default AnmateStair;

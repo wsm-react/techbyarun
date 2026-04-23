@@ -14,7 +14,7 @@ import { SendEmailSingleRecipients, SendEmailWithAttachmentToRecipients } from '
 import { RenderMailTemplate } from '@/helpers/mailer-template';
 
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
     try {
 
         const payload: CareerPayload = await req.json();

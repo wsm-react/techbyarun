@@ -8,7 +8,7 @@ export const RenderMailTemplate = async (templateName: string, data: any): Promi
     const templatePath = path.join(process.cwd(), 'src', 'mailer-templates', templateName);
 
     const dominUrl = process.env.SITE_URL?.endsWith('/') ? process.env.SITE_URL : `${process.env.SITE_URL}/`;
-    const dominName = process.env.SITE_DOMIN ? process.env.SITE_DOMIN : process.env.SITE_DOMIN;
+    const dominName = process.env.SITE_DOMIN ?? '';
 
     const newData = { ...data, dominUrl, dominName };
 

@@ -24,8 +24,8 @@ export class EnvFirebase {
 };
 
 
-export const dominName = process.env.NEXT_PUBLIC_SITE_DOMIN ? process.env.NEXT_PUBLIC_SITE_DOMIN : process.env.NEXT_PUBLIC_SITE_DOMIN;
-export const dominUrl = process.env.NEXT_PUBLIC_SITE_URL ? process.env.NEXT_PUBLIC_SITE_URL : process.env.NEXT_PUBLIC_SITE_URL;
+export const dominName = process.env.NEXT_PUBLIC_SITE_DOMIN ?? '';
+export const dominUrl = process.env.NEXT_PUBLIC_SITE_URL ?? '';
 
 // export class EnvEmails {
 //     static SMTP_HOST: string = process.env.GODADDY_SMTP_HOST!

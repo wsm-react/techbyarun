@@ -34,7 +34,7 @@ export function FormCareer() {
     };
 
     const form = useForm<CareerType>({
-        resolver: zodResolver(CareerFormSchema),
+        resolver: zodResolver(CareerFormSchema) as Resolver<CareerType>,
         mode: 'onChange',
         defaultValues: {
             name: "",

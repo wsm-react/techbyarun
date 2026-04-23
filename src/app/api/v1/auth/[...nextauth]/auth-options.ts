@@ -1,9 +1,8 @@
 import { AuthOptions } from 'next-auth';
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import bcrypt from "bcrypt";
+import appDB from '@/config/database';
 
-// import bcrypt from "bcrypt";
-// const prisma = new PrismaClient();
 export const authOptions: AuthOptions = {
     providers: [
         CredentialsProvider({
@@ -12,17 +11,29 @@ export const authOptions: AuthOptions = {
                 email: { label: "email id", type: "text", placeholder: "Enter email id." },
                 password: { label: "Password", type: "password", placeholder: "Enter password." }
             },
-            async authorize(credentials, req) {
-                // Add logic here to look up the user from the credentials supplied
-                const user = { id: "1", email: credentials?.email, password: credentials?.password }
-
-                if (user) {
-                    // Any object returned will be saved in `user` property of the JWT
-                    return user
-                } else {
-                    // If you return null then an error will be displayed advising the user to check their details.
-                    return null
+            async authorize(credentials) {
+                if (!credentials?.email || !credentials?.password) {
+                    return null;
                 }
+
+                const user = await appDB.user.findUnique({
+                    where: { email: credentials.email },
+                });
+
+                if (!user) {
+                    return null;
+                }
+
+                const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+                if (!isPasswordValid) {
+                    return null;
+                }
+
+                return {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name ?? undefined,
+                };
             }
         })
     ],
@@ -33,7 +44,6 @@ export const authOptions: AuthOptions = {
         },
         session: async ({ session, token }) => {
             session.user = token.user as any;
-
             return session;
         },
     },
@@ -42,5 +52,4 @@ export const authOptions: AuthOptions = {
     },
     session: { strategy: "jwt" },
     secret: process.env.AUTH_SECRET,
-    // adapter: PrismaAdapter(appDB),
 };

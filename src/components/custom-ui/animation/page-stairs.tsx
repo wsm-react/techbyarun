@@ -12,7 +12,7 @@ export default function StairAnimataionLoader() {
     return (
         <Fragment>
             <AnimatePresence mode="wait">
-                <div key={pathName} className="h-screen w-screen fixed flex top-0 right-0 left-0 pointer-events-none z-40">
+                <div key={pathName} className="h-screen w-screen fixed flex top-0 right-0 left-0 pointer-events-none z-[1040]">
                     <AnmateStair />
                 </div>
             </AnimatePresence>
