@@ -33,8 +33,8 @@ export function FormCareer() {
         setFiles(files);
     };
 
-    const form = useForm<CareerType>({
-        resolver: zodResolver(CareerFormSchema) as Resolver<CareerType>,
+    const form = useForm<CareerType, any, CareerType>({
+        resolver: zodResolver(CareerFormSchema) as any,
         mode: 'onChange',
         defaultValues: {
             name: "",
@@ -174,7 +174,7 @@ export function FormCareer() {
     return (
         <Form {...form}>
             {/* ref={formRef} */}
-            <form autoComplete="off" onSubmit={handleSubmit(onSubmitForm)} className="w-1/1 md:w-2/3 md:space-y-7 space-y-5">
+            <form autoComplete="off" onSubmit={handleSubmit(onSubmitForm as any)} className="w-1/1 md:w-2/3 md:space-y-7 space-y-5">
                 <FormField control={form.control}
                     name="name"
                     render={({ field }) => (
