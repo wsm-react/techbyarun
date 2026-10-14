@@ -13,6 +13,26 @@ import { EnvApp, EnvMailer } from '@/helpers/constants';
 import { SendEmailSingleRecipients, SendEmailWithAttachmentToRecipients } from '@/config/nodemailer';
 import { RenderMailTemplate } from '@/helpers/mailer-template';
 
+// Maps the client-shaped career payload to the Career collection's storage field names.
+const toCareerStorage = (d: CareerPayload) => ({
+    name: d.name,
+    email: d.email,
+    phone: d.phone,
+    title: d.title,
+    slug: d.slug,
+    company: d.company,
+    experience_years: d.experience,
+    current_ctc: d.currentCTC,
+    expected_ctc: d.expectedCTC,
+    notice_period: d.noticePeriod,
+    resume_uri: d.resumeUri,
+    resume_type: d.resumeType,
+    resume_name: d.resumeName,
+    resume_size: d.resumeSize,
+    bio: d.bio,
+    portfolio: d.portfolio,
+});
+
 
 export async function POST(req: NextRequest) {
     try {
@@ -37,9 +57,7 @@ export async function POST(req: NextRequest) {
             expectedCTC: output.expectedCTC.toString(),
         }
 
-        const existingEmail = await appDB.career.findFirst({
-            where: { email: validOutput.email },
-        });
+        const existingEmail = await appDB.orm.Career.where({ email: validOutput.email }).first();
 
 
 
@@ -49,32 +67,32 @@ export async function POST(req: NextRequest) {
 
         if (existingEmail) {
             // console.log(existingEmail);
-            const leadCreatedAt = new Date(existingEmail.createdAt);
+            const leadCreatedAt = new Date(existingEmail.created_at);
             const currentDate = new Date();
             const daysDifference = Math.floor((currentDate.getTime() - leadCreatedAt.getTime()) / (1000 * 60 * 60 * 24));
 
             if (daysDifference < 7) {
-                const updatedLead = await appDB.career.update({
-                    where: { email: validOutput.email },
-                    // @ts-ignore
-                    data: filterUndefinedAndNull(validOutput as CareerPayload),
-                });
+                const updatedLead = await appDB.orm.Career
+                    .where({ email: validOutput.email })
+                    .update(
+                        filterUndefinedAndNull(toCareerStorage(filterUndefinedAndNull(validOutput) as CareerPayload)),
+                    );
 
                 return NextResponse.json(
                     {
-                        dataId: updatedLead.id,
-                        ...updatedLead,
+                        dataId: updatedLead!._id,
+                        ...updatedLead!,
                         success: false,
                         status: 200,
                         message: 'Thank you for reaching out to us. We have already received your details. Please allow us 7 days before submitting another request.',
                     }, { status: 200 });
 
             } else {
-                const updatedLead = await appDB.career.update({
-                    where: { email: validOutput.email },
-                    // @ts-ignore
-                    data: filterUndefinedAndNull(validOutput as CareerPayload),
-                });
+                const updatedLead = await appDB.orm.Career
+                    .where({ email: validOutput.email })
+                    .update(
+                        filterUndefinedAndNull(toCareerStorage(filterUndefinedAndNull(validOutput) as CareerPayload)),
+                    );
 
                 const mailRes = await SendEmailWithAttachmentToRecipients({
                     to: output.email,
@@ -88,20 +106,22 @@ export async function POST(req: NextRequest) {
                 });
 
                 return NextResponse.json({
-                    ...updatedLead,
+                    ...updatedLead!,
                     ...mailRes,
                     success: true,
                     status: 201,
-                    message: `Thank you for applying for the position of ${updatedLead.title} at ${process.env.SITE_DOMIN}. We appreciate your interest in joining our team. Our recruitment team will review your application and get back to you soon. If you have any questions or need further information, feel free to reach out to us.`,
+                    message: `Thank you for applying for the position of ${updatedLead!.title} at ${process.env.SITE_DOMIN}. We appreciate your interest in joining our team. Our recruitment team will review your application and get back to you soon. If you have any questions or need further information, feel free to reach out to us.`,
                 }, { status: 201 });
             }
         }
 
         const newLeadData = filterUndefinedAndNull(validOutput) as CareerPayload;
 
-        const newLead = await appDB.career.create({
-            // @ts-ignore
-            data: newLeadData,
+        const newLead = await appDB.orm.Career.create({
+            ...toCareerStorage(newLeadData),
+            // bio may be absent after filtering; write null explicitly so no undefined reaches the write path
+            bio: newLeadData.bio ?? null,
+            uuid: crypto.randomUUID(),
         });
 
         const mailRes = await SendEmailWithAttachmentToRecipients({

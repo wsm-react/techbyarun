@@ -16,9 +16,7 @@ export const authOptions: AuthOptions = {
                     return null;
                 }
 
-                const user = await appDB.user.findUnique({
-                    where: { email: credentials.email },
-                });
+                const user = await appDB.orm.User.where({ email: credentials.email }).first();
 
                 if (!user) {
                     return null;
@@ -30,7 +28,7 @@ export const authOptions: AuthOptions = {
                 }
 
                 return {
-                    id: user.id,
+                    id: user._id,
                     email: user.email,
                     name: user.name ?? undefined,
                 };

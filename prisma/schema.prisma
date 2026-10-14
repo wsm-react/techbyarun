@@ -79,7 +79,7 @@ model ContectUs {
 
 model Career {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  uuid         String   @unique @default(cuid())
+  uuid         String   @unique
   title        String?
   slug         String?
   name         String?
@@ -104,7 +104,7 @@ model Career {
 
 // model Job {
 //   id                  String              @id @default(auto()) @map("_id") @db.ObjectId
-//   uuid                String              @unique @default(cuid())
+//   uuid                String              @unique
 //   title               String
 //   location            String
 //   experience          String
@@ -118,7 +118,7 @@ model Career {
 
 // model JobResponsibility {
 //   id           String @id @default(auto()) @map("_id") @db.ObjectId
-//   uuid         String @unique @default(cuid())
+//   uuid         String @unique
 //   description  String
 //   requirements String
 //   jobId        String @map("job_id") @db.ObjectId
@@ -137,7 +137,7 @@ type Address {
 
 model Jobs {
   id                    String                 @id @default(auto()) @map("_id") @db.ObjectId
-  uuid                  String                 @unique @default(cuid())
+  uuid                  String                 @unique
   slug                  String                 @unique
   employeeTypes         String[]               @map("employee_types")
   employmentCategories  String[]               @map("employment_categories")
@@ -161,7 +161,7 @@ model Jobs {
 
 // model JobRequirement {
 //   id          String @id @default(auto()) @map("_id") @db.ObjectId
-//   uuid        String @unique @default(cuid())
+//   uuid        String @unique
 //   requirement String
 //   importance  String
 //   jobId       String @map("job_id") @db.ObjectId
@@ -170,7 +170,7 @@ model Jobs {
 
 model JobTitle {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
-  uuid        String @unique @default(cuid())
+  uuid        String @unique
   title       String
   description String
   jobId       String @map("job_id") @db.ObjectId
@@ -179,7 +179,7 @@ model JobTitle {
 
 model Skill {
   id              String  @id @default(auto()) @map("_id") @db.ObjectId
-  uuid            String  @unique @default(cuid())
+  uuid            String  @unique
   context         String
   displayName     String  @map("display_name")
   experienceYears Int     @map("experience_years")
@@ -193,7 +193,7 @@ model Skill {
 
 model WorkLocation {
   id        String      @id @default(auto()) @map("_id") @db.ObjectId
-  uuid      String      @unique @default(cuid())
+  uuid      String      @unique
   isCurrent Boolean     @map("is_current")
   priority  Int
   address   FullAddress
@@ -202,23 +202,23 @@ model WorkLocation {
 }
 
 type FullAddress {
-  addressLineOne          String @map("address_line_one")
-  addressLineTwo          String @map("address_line_two")
-  administrativeArea      String @map("administrative_area")
-  languageCode            String @map("language_code")
-  locality                String
-  postalCode              String @map("postal_code")
-  propertyNumber          String @map("property_number")
-  propertyNumberExtension String @map("property_number_extension")
-  regionCode              String @map("region_code")
-  sortingCode             String @map("sorting_code")
-  streetName              String @map("street_name")
-  sublocality             String
+  address_line_one           String
+  address_line_two           String
+  administrative_area        String
+  language_code              String
+  locality                   String
+  postal_code                String
+  property_number            String
+  property_number_extension  String
+  region_code                String
+  sorting_code               String
+  street_name                String
+  sublocality                String
 }
 
 model EducationRequirement {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  uuid        String   @unique @default(cuid())
+  uuid        String   @unique
   degreeTypes String[] @map("degree_types")
   importance  String
   jobId       String   @map("job_id") @db.ObjectId
@@ -227,7 +227,7 @@ model EducationRequirement {
 
 model JobClassification {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
-  uuid        String @unique @default(cuid())
+  uuid        String @unique
   category    String
   department  String
   environment String
@@ -240,7 +240,7 @@ model JobClassification {
 
 model JobDescription {
   id               String    @id @default(auto()) @map("_id") @db.ObjectId
-  uuid             String    @unique @default(cuid())
+  uuid             String    @unique
   benefits         Benefit[]
   description      String
   qualifications   String
@@ -252,7 +252,7 @@ model JobDescription {
 
 model Benefit {
   id               String         @id @default(auto()) @map("_id") @db.ObjectId
-  uuid             String         @unique @default(cuid())
+  uuid             String         @unique
   context          String
   type             String
   jobDescriptionId String         @map("job_description_id") @db.ObjectId
@@ -263,7 +263,7 @@ model Benefit {
 
 model JobSkill {
   id      String @id @default(auto()) @map("_id") @db.ObjectId
-  uuid    String @unique @default(cuid())
+  uuid    String @unique
   jobId   String @map("job_id") @db.ObjectId
   skillId String @map("skill_id") @db.ObjectId
 
@@ -275,7 +275,7 @@ model JobSkill {
 
 model JobWorkLocation {
   id             String @id @default(auto()) @map("_id") @db.ObjectId
-  uuid           String @unique @default(cuid())
+  uuid           String @unique
   jobId          String @map("job_id") @db.ObjectId
   workLocationId String @map("work_location_id") @db.ObjectId
 

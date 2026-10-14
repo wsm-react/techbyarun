@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
             errorReporter: () => new JSONAPIErrorReporter(),
         });
 
-        const user = await appDB.user.findUnique({ where: { email: output.email } });
+        const user = await appDB.orm.User.where({ email: output.email }).first();
         if (!user) {
             return NextResponse.json({
                 success: false,
@@ -23,20 +23,18 @@ export async function POST(req: NextRequest) {
             }, { status: 404 });
         }
 
-        const newLead = await appDB.leads.create({
-            data: {
-                name: output.name,
-                email: output.email,
-                mobile: output.mobile,
-                userId: user.id,
-            },
+        const newLead = await appDB.orm.Leads.create({
+            name: output.name,
+            email: output.email,
+            mobile: output.mobile,
+            user_id: user._id,
         });
 
         return NextResponse.json({
             success: true,
             status: 201,
             message: 'Lead captured successfully.',
-            data: { id: newLead.id },
+            data: { id: newLead._id },
         }, { status: 201 });
 
     } catch (error: any) {

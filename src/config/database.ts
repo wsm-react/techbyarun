@@ -1,21 +1,11 @@
-// import { PrismaClient } from '@prisma/client';
-// declare global {
-//     var prisma: PrismaClient | undefined;
-// }
-// // Create an instance of PrismaClient
-// const prisma = globalThis.prisma || new PrismaClient();
-// // Assign the instance to the global object for development
-// if (process.env.NODE_ENV !== 'production') {
-//     globalThis.prisma = prisma;
-// }
-// export const appDB = prisma;
+import mongo from '@prisma/orm-mongo/runtime';
+import type { Contract } from '../../prisma/contract.d';
+import contractJson from '../../prisma/contract.json' with { type: 'json' };
 
+// Module-level singleton (Prisma ORM 8 Mongo client pattern — created once per process)
+const appDB = mongo<Contract>({
+  contractJson,
+  url: process.env.DATABASE_URL as string,
+});
 
-import { PrismaClient } from '@prisma/client'
-
-const prismaClientSingleton = () => { return new PrismaClient() };
-declare const globalThis: { prismaGlobal: ReturnType<typeof prismaClientSingleton> } & typeof global;
-let appDB = globalThis.prismaGlobal ?? prismaClientSingleton()
-if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = appDB;
-
-export default appDB
+export default appDB;

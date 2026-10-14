@@ -1,5 +1,6 @@
 // lib/email.ts
 import nodemailer from 'nodemailer';
+import type { SendMailOptions, TransportOptions } from 'nodemailer';
 
 
 
@@ -11,7 +12,7 @@ const transporter = nodemailer.createTransport({
         user: process.env.GODADDY_SMTP_USER as string, // your GoDaddy email
         pass: process.env.GODADDY_SMTP_PASSWORD as string, // your GoDaddy email password
     },
-} as nodemailer.TransportOptions); // Cast to TransportOptions
+} as TransportOptions); // Cast to TransportOptions
 
 interface EmailOptions {
     to: string | string[];
@@ -68,7 +69,7 @@ export const SendEmailWithAttachmentToRecipients = async ({ to, subject, html, b
     const recipients = Array.isArray(to) ? to : (to ? [to] : []);
     const bccRecipients = Array.isArray(bcc) ? bcc : (bcc ? [bcc] : []);
 
-    const mailOptions: nodemailer.SendMailOptions = {
+    const mailOptions: SendMailOptions = {
         from: process.env.GODADDY_EMAIL_FROM as string,
         to: recipients.join(', '),
         subject,

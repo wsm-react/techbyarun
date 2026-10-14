@@ -5,9 +5,23 @@ import vine, { errors } from '@vinejs/vine';
 
 import { ContectUsPayload } from '@/types/api-interface';
 import { JSONAPIErrorReporter } from '@/validator/error-reporter';
-import { filterUndefinedAndNull } from '@/lib/function';
+import { filterUndefined, filterUndefinedAndNull } from '@/lib/function';
 import appDB from '@/config/database';
 import { ApiContectUsSchema } from '@/validator/vine-schema';
+
+// Maps the client-shaped payload to the ContectUs collection's storage field names, dropping undefined keys.
+const toContectUsStorage = (d: Partial<ContectUsPayload>) => filterUndefined({
+    first_name: d.firstName,
+    last_name: d.lastName,
+    phone: d.phone,
+    email: d.email,
+    subject: d.subject,
+    message: d.message,
+    looking_for: d.lookingFor,
+    budget: d.budget,
+    due_date: d.dueDate,
+    address: d.address,
+});
 
 export async function POST(req: NextRequest) {
     try {
@@ -21,14 +35,10 @@ export async function POST(req: NextRequest) {
 
         // console.log("Validation output:", validOutput);
 
-        const existingEmail = await appDB.contectUs.findFirst({
-            where: {
-                email: validOutput.email,
-            },
-        });
+        const existingEmail = await appDB.orm.ContectUs.where({ email: validOutput.email }).first();
 
         if (existingEmail) {
-            const leadCreatedAt = new Date(existingEmail.createdAt);
+            const leadCreatedAt = new Date(existingEmail.created_at);
             const now = new Date();
             const daysDifference = Math.floor((now.getTime() - leadCreatedAt.getTime()) / (1000 * 60 * 60 * 24));
 
@@ -42,12 +52,9 @@ export async function POST(req: NextRequest) {
                         message: 'Thank you for reaching out to us. We have already received your details. Please allow us 7 days before submitting another request.',
                     }, { status: 200 });
             } else {
-                const updatedLead = await appDB.contectUs.update({
-                    where: {
-                        email: validOutput.email,
-                    },
-                    data: filterUndefinedAndNull(validOutput as ContectUsPayload),
-                });
+                const updatedLead = await appDB.orm.ContectUs
+                    .where({ email: validOutput.email })
+                    .update(toContectUsStorage(filterUndefinedAndNull(validOutput as ContectUsPayload)));
 
                 return NextResponse.json({
                     success: true,
@@ -59,11 +66,9 @@ export async function POST(req: NextRequest) {
 
         const newLeadData = filterUndefinedAndNull(validOutput) as ContectUsPayload;
 
-        const newLead = await appDB.contectUs.create({
-            data: newLeadData,
-        });
+        const newLead = await appDB.orm.ContectUs.create(toContectUsStorage(newLeadData));
 
-        return NextResponse.json({ success: true, status: 201, ...newLead, message: 'New lead created for new user.', }, { status: 201 });
+        return NextResponse.json({ success: true, status: 201, ...newLead, id: newLead._id, message: 'New lead created for new user.', }, { status: 201 });
 
     } catch (error: any) {
         // console.log(error);

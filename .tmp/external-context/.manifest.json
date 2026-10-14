@@ -1,0 +1,66 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-10-14T15:20:00Z",
+  "libraries": {
+    "prisma": {
+      "files": [
+        {
+          "filename": "orm-mongo-runtime-client-api-rc17.md",
+          "topic": "@prisma/orm-mongo 8.0.0-rc.17 runtime client API (mongo(), where/filters, CRUD/upsert, ObjectId returns, 11000 duplicate key, raw, batching)",
+          "tech_stack": "Prisma ORM 8 RC (locked to toolchain 8.0.0-rc.17) + MongoDB",
+          "fetched": "2026-10-14T15:00:00Z",
+          "source": "Official Prisma docs (prisma.io .md pages) + prisma/orm v8.0.0-rc.17 release notes"
+        },
+        {
+          "filename": "prisma6schema-cli-seed-nextjs-rc17.md",
+          "topic": "prisma6Schema shortcut, contract emit artifacts, v8 CLI command map, seed, @prisma/client role, Next.js 16, version compatibility (CLI rc.22 / orm rc.17)",
+          "tech_stack": "Prisma CLI 8.0.0-rc.22 + @prisma/orm-mongo 8.0.0-rc.17",
+          "fetched": "2026-10-14T15:10:00Z",
+          "source": "Official Prisma docs (prisma.io) + npm registry metadata + prisma/orm tag v8.0.0-rc.17"
+        },
+        {
+          "filename": "rc16-to-rc17-changes.md",
+          "topic": "rc.16 → rc.17 breaking changes and recent RC history (Mongo-relevant), may-change-before-GA flags",
+          "tech_stack": "Prisma ORM 8 RC train",
+          "fetched": "2026-10-14T15:15:00Z",
+          "source": "GitHub releases prisma/orm v8.0.0-rc.17…rc.12 + upgrade recipes"
+        },
+        {
+          "filename": "mongodb-prisma7-support-status.md",
+          "topic": "MongoDB support status in Prisma ORM 7 + version pinning",
+          "tech_stack": "Prisma CLI 7.10.0 + MongoDB",
+          "fetched": "2026-10-14T12:00:00Z",
+          "source": "Official Prisma docs (prisma.io) + Context7 API"
+        },
+        {
+          "filename": "prisma-config-v7.md",
+          "topic": "prisma.config.ts format for v7 (imports, fields, dotenv, seed)",
+          "tech_stack": "Prisma ORM v7",
+          "fetched": "2026-10-14T12:00:00Z",
+          "source": "Official Prisma docs (prisma.io)"
+        },
+        {
+          "filename": "accelerate-v7-client.md",
+          "topic": "Accelerate client constructor (accelerateUrl), URL formats, MongoDB, retirement",
+          "tech_stack": "Prisma Accelerate + v7",
+          "fetched": "2026-10-14T12:00:00Z",
+          "source": "Official Prisma docs (prisma.io)"
+        },
+        {
+          "filename": "generator-and-breaking-changes-v7.md",
+          "topic": "v7 generator (prisma-client), imports, breaking changes",
+          "tech_stack": "Prisma ORM v7",
+          "fetched": "2026-10-14T12:00:00Z",
+          "source": "Official Prisma docs (prisma.io) + Context7 API"
+        },
+        {
+          "filename": "mongodb-v6-to-v8-upgrade-path.md",
+          "topic": "MongoDB upgrade path v6 → ORM 8 RC (@prisma/orm-mongo)",
+          "tech_stack": "Prisma ORM 8 RC + MongoDB",
+          "fetched": "2026-10-14T12:00:00Z",
+          "source": "Official Prisma docs (prisma.io)"
+        }
+      ]
+    }
+  }
+}

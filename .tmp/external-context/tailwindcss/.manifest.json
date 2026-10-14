@@ -1,0 +1,53 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-10-14T12:00:00Z",
+  "libraries": {
+    "tailwindcss": {
+      "context": "Migration from Tailwind CSS v3.4 to v4.3.x for a Next.js 16 project with postcss.config.mjs, globals.css @tailwind directives, and a legacy tailwind.config.ts (darkMode class, content globs, JS plugins incl. tailwindcss-animate + flattenColorPalette deep import)",
+      "files": [
+        {
+          "filename": "nextjs-postcss-autoprefixer.md",
+          "topic": "PostCSS migration (@tailwindcss/postcss), autoprefixer removal, upgrade tool, Next.js notes",
+          "tech_stack": "Next.js 16",
+          "fetched": "2026-10-14T12:00:00Z",
+          "source": "Context7 API + official docs (tailwindcss.com/upgrade-guide)"
+        },
+        {
+          "filename": "css-entry-dark-mode.md",
+          "topic": "globals.css @import entry, @custom-variant dark for class-based dark mode, content scanning",
+          "tech_stack": "Next.js 16",
+          "fetched": "2026-10-14T12:00:00Z",
+          "source": "Context7 API + official docs (dark-mode.mdx) + v4 source"
+        },
+        {
+          "filename": "legacy-config-at-config.md",
+          "topic": "@config directive syntax, supported/unsupported legacy config options, incremental CSS migration",
+          "tech_stack": "Next.js 16",
+          "fetched": "2026-10-14T12:00:00Z",
+          "source": "Context7 API + official docs (functions-and-directives.mdx) + v4 source"
+        },
+        {
+          "filename": "flatten-color-palette.md",
+          "topic": "tailwindcss/lib/util/flattenColorPalette deep import status in v4.3.x + minimal drop-in implementation",
+          "tech_stack": "Next.js 16",
+          "fetched": "2026-10-14T12:00:00Z",
+          "source": "npm registry exports map + unpkg dist file + v4 source"
+        },
+        {
+          "filename": "animate-plugin-tw-animate-css.md",
+          "topic": "tailwindcss-animate@1.0.7 status in v4, tw-animate-css replacement + wiring steps",
+          "tech_stack": "Next.js 16 / shadcn",
+          "fetched": "2026-10-14T12:00:00Z",
+          "source": "shadcn/ui docs + tw-animate-css repo + npm registry"
+        },
+        {
+          "filename": "apply-layer-theme-shadcn-breaking-changes.md",
+          "topic": "@apply/@layer/@utility changes, theme() deprecation, @theme inline for hsl(var()) shadcn themes, renamed utilities, preflight changes",
+          "tech_stack": "Next.js 16 / shadcn",
+          "fetched": "2026-10-14T12:00:00Z",
+          "source": "Context7 API + official docs (upgrade-guide.mdx, theme.mdx) + shadcn docs"
+        }
+      ]
+    }
+  }
+}

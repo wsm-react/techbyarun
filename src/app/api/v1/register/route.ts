@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
             }, { status: 422 });
         }
 
-        const existing = await appDB.user.findUnique({ where: { email } });
+        const existing = await appDB.orm.User.where({ email }).first();
         if (existing) {
             return NextResponse.json({
                 success: false,
@@ -25,16 +25,21 @@ export async function POST(req: NextRequest) {
         }
 
         const hashedPassword = await bcrypt.hash(password, 12);
-        const newUser = await appDB.user.create({
-            data: { name, email, mobile, password: hashedPassword },
-            select: { id: true, name: true, email: true, mobile: true, createdAt: true },
+        const newUser = await appDB.orm.User.create({
+            name, email, mobile, password: hashedPassword,
         });
 
         return NextResponse.json({
             success: true,
             status: 201,
             message: 'User created successfully',
-            data: newUser,
+            data: {
+                id: newUser._id,
+                name: newUser.name,
+                email: newUser.email,
+                mobile: newUser.mobile,
+                createdAt: newUser.created_at,
+            },
         }, { status: 201 });
 
     } catch (error: any) {
