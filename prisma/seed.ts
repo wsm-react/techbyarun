@@ -18,7 +18,7 @@ type SeedPost = {
 
 const initialBlog: SeedPost[] = [
     {
-        slug: 'this-is-normal-blog',
+        slug: 'is-normal-blog',
         title: 'This is blog title 1',
         subTitle: 'This is blog subtitle 1',
         body: 'This is blog body 1',
