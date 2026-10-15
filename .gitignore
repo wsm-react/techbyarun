@@ -37,12 +37,13 @@ yarn-error.log*
 .vscode/settings.json
 .vscode/symbols.json
 
+# prisma generated client (regenerated on every build via `prisma generate`)
+/src/generated/
+
+# scratch / working notes
+.tmp/
+
 # .env
 package.lock.json
 yarn.lock
 .vscode/*
-prisma/migrations/*
-prisma/migrations/*
-prisma/migrations/*
-prisma/migrations/*
-prisma/migrations/*

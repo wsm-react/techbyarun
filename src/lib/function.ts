@@ -47,6 +47,16 @@ export function filterUndefined<T extends Record<string, any>>(obj: T): Partial<
 }
 
 
+// Converts a display label into a URL-safe slug (e.g. "UX Design" -> "ux-design").
+export function Slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+
 export function filterUndefinedAndNull<T extends Record<string, any>>(obj: T): Partial<T> {
   return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v !== undefined && v !== null)) as Partial<T>;
 }

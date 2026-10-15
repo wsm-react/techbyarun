@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import appDB from '@/config/database';
+import prisma from '@/config/database';
 import { NextRequest, NextResponse } from 'next/server';
 
 
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
             }, { status: 422 });
         }
 
-        const existing = await appDB.orm.User.where({ email }).first();
+        const existing = await prisma.user.findUnique({ where: { email } });
         if (existing) {
             return NextResponse.json({
                 success: false,
@@ -25,8 +25,13 @@ export async function POST(req: NextRequest) {
         }
 
         const hashedPassword = await bcrypt.hash(password, 12);
-        const newUser = await appDB.orm.User.create({
-            name, email, mobile, password: hashedPassword,
+        const newUser = await prisma.user.create({
+            data: {
+                name,
+                email,
+                mobile,
+                password: hashedPassword,
+            },
         });
 
         return NextResponse.json({
@@ -34,11 +39,11 @@ export async function POST(req: NextRequest) {
             status: 201,
             message: 'User created successfully',
             data: {
-                id: newUser._id,
+                id: newUser.id,
                 name: newUser.name,
                 email: newUser.email,
                 mobile: newUser.mobile,
-                createdAt: newUser.created_at,
+                createdAt: newUser.createdAt,
             },
         }, { status: 201 });
 

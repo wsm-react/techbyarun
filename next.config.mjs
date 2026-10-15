@@ -5,9 +5,9 @@ const allowedOrigin = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000
 
 const nextConfig = {
   reactStrictMode: true,
-  // Prisma ORM 8 Mongo runtime + driver must not be bundled by Turbopack
-  // (bundled ConnectionString/whatwg-url breaks URL validation at build/runtime)
-  serverExternalPackages: ['@prisma/orm-mongo', 'mongodb', 'mongodb-connection-string-url'],
+  // Prisma ORM v7 MySQL driver adapter + mariadb driver must not be bundled
+  // (the driver relies on native/dynamic requires that break under bundlers)
+  serverExternalPackages: ['@prisma/adapter-mariadb', 'mariadb'],
   async headers() {
     return [
       {

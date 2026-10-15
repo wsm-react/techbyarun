@@ -1,7 +1,7 @@
 import { AuthOptions } from 'next-auth';
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
-import appDB from '@/config/database';
+import prisma from '@/config/database';
 
 export const authOptions: AuthOptions = {
     providers: [
@@ -9,14 +9,14 @@ export const authOptions: AuthOptions = {
             name: "Credentials",
             credentials: {
                 email: { label: "email id", type: "text", placeholder: "Enter email id." },
-                password: { label: "Password", type: "password", placeholder: "Enter password." }
+                password: { label: "Password", type: "password", placeholder: "Enter Password." }
             },
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) {
                     return null;
                 }
 
-                const user = await appDB.orm.User.where({ email: credentials.email }).first();
+                const user = await prisma.user.findUnique({ where: { email: credentials.email } });
 
                 if (!user) {
                     return null;
@@ -28,9 +28,10 @@ export const authOptions: AuthOptions = {
                 }
 
                 return {
-                    id: user._id,
+                    id: user.id,
                     email: user.email,
                     name: user.name ?? undefined,
+                    role: user.role,
                 };
             }
         })
@@ -49,5 +50,5 @@ export const authOptions: AuthOptions = {
         signIn: "/login",
     },
     session: { strategy: "jwt" },
-    secret: process.env.AUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET,
 };

@@ -1,4 +1,4 @@
-import appDB from '@/config/database';
+import prisma from '@/config/database';
 import { NextRequest, NextResponse } from 'next/server';
 import vine, { errors } from '@vinejs/vine';
 import { JSONAPIErrorReporter } from '@/validator/error-reporter';
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
             errorReporter: () => new JSONAPIErrorReporter(),
         });
 
-        const user = await appDB.orm.User.where({ email: output.email }).first();
+        const user = await prisma.user.findUnique({ where: { email: output.email } });
         if (!user) {
             return NextResponse.json({
                 success: false,
@@ -23,18 +23,20 @@ export async function POST(req: NextRequest) {
             }, { status: 404 });
         }
 
-        const newLead = await appDB.orm.Leads.create({
-            name: output.name,
-            email: output.email,
-            mobile: output.mobile,
-            user_id: user._id,
+        const newLead = await prisma.leads.create({
+            data: {
+                name: output.name,
+                email: output.email,
+                mobile: output.mobile,
+                userId: user.id,
+            },
         });
 
         return NextResponse.json({
             success: true,
             status: 201,
             message: 'Lead captured successfully.',
-            data: { id: newLead._id },
+            data: { id: newLead.id },
         }, { status: 201 });
 
     } catch (error: any) {

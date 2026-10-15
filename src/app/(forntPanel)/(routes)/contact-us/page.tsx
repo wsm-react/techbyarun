@@ -53,10 +53,10 @@ export default function ContactUsPage() {
                         Fill in your details and I&apos;ll respond within 24 hours.
                     </p>
                     <Link
-                        href="/career"
+                        href="/coffee-with-me"
                         className="mt-6 inline-block rounded-full border border-border px-8 py-3 text-sm font-medium transition hover:bg-muted"
                     >
-                        View Open Roles Instead →
+                        Coffee with me instead →
                     </Link>
                 </div>
             </section>

@@ -7,7 +7,7 @@ const quickLinks = [
     { label: 'About Me', href: '/about-me' },
     { label: 'Blog', href: '/blog' },
     { label: 'Projects', href: '/projects' },
-    { label: 'Career', href: '/career' },
+    { label: 'Coffee with me', href: '/coffee-with-me' },
     { label: 'Contact Us', href: '/contact-us' },
 ];
 
@@ -134,7 +134,7 @@ export default function AppFooter() {
                     </p>
                     <div className="flex gap-4 text-xs text-muted-foreground">
                         <Link href="/contact-us" className="hover:text-primary transition-colors">Contact</Link>
-                        <Link href="/career" className="hover:text-primary transition-colors">Careers</Link>
+                        <Link href="/coffee-with-me" className="hover:text-primary transition-colors">Coffee with me</Link>
                         <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
                     </div>
                 </div>

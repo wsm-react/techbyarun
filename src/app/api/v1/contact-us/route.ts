@@ -1,26 +1,25 @@
-// @ts-nocheck
-
 import { NextRequest, NextResponse } from 'next/server';
 import vine, { errors } from '@vinejs/vine';
 
 import { ContectUsPayload } from '@/types/api-interface';
 import { JSONAPIErrorReporter } from '@/validator/error-reporter';
 import { filterUndefined, filterUndefinedAndNull } from '@/lib/function';
-import appDB from '@/config/database';
+import prisma from '@/config/database';
 import { ApiContectUsSchema } from '@/validator/vine-schema';
+import { Prisma } from '@/generated/prisma/client';
 
-// Maps the client-shaped payload to the ContectUs collection's storage field names, dropping undefined keys.
+// Maps the client-shaped payload to the ContactUs model properties, dropping undefined keys.
 const toContectUsStorage = (d: Partial<ContectUsPayload>) => filterUndefined({
-    first_name: d.firstName,
-    last_name: d.lastName,
+    firstName: d.firstName,
+    lastName: d.lastName,
     phone: d.phone,
     email: d.email,
     subject: d.subject,
     message: d.message,
-    looking_for: d.lookingFor,
+    lookingFor: d.lookingFor,
     budget: d.budget,
-    due_date: d.dueDate,
-    address: d.address,
+    dueDate: d.dueDate ?? undefined,
+    address: (d.address ?? undefined) as Prisma.InputJsonValue | undefined,
 });
 
 export async function POST(req: NextRequest) {
@@ -33,12 +32,10 @@ export async function POST(req: NextRequest) {
             errorReporter: () => new JSONAPIErrorReporter()
         });
 
-        // console.log("Validation output:", validOutput);
-
-        const existingEmail = await appDB.orm.ContectUs.where({ email: validOutput.email }).first();
+        const existingEmail = await prisma.contactUs.findUnique({ where: { email: validOutput.email } });
 
         if (existingEmail) {
-            const leadCreatedAt = new Date(existingEmail.created_at);
+            const leadCreatedAt = new Date(existingEmail.createdAt);
             const now = new Date();
             const daysDifference = Math.floor((now.getTime() - leadCreatedAt.getTime()) / (1000 * 60 * 60 * 24));
 
@@ -48,13 +45,13 @@ export async function POST(req: NextRequest) {
                         success: false,
                         status: 200,
                         ...validOutput,
-                        // message: 'We already have your details. Please wait 7 days before submitting again.',
                         message: 'Thank you for reaching out to us. We have already received your details. Please allow us 7 days before submitting another request.',
                     }, { status: 200 });
             } else {
-                const updatedLead = await appDB.orm.ContectUs
-                    .where({ email: validOutput.email })
-                    .update(toContectUsStorage(filterUndefinedAndNull(validOutput as ContectUsPayload)));
+                const updatedLead = await prisma.contactUs.update({
+                    where: { email: validOutput.email },
+                    data: toContectUsStorage(filterUndefinedAndNull(validOutput as unknown as ContectUsPayload)) as Prisma.ContactUsUpdateInput,
+                });
 
                 return NextResponse.json({
                     success: true,
@@ -64,19 +61,25 @@ export async function POST(req: NextRequest) {
             }
         }
 
-        const newLeadData = filterUndefinedAndNull(validOutput) as ContectUsPayload;
+        const newLeadData = filterUndefinedAndNull(validOutput) as unknown as ContectUsPayload;
 
-        const newLead = await appDB.orm.ContectUs.create(toContectUsStorage(newLeadData));
+        const newLead = await prisma.contactUs.create({
+            data: toContectUsStorage(newLeadData) as Prisma.ContactUsCreateInput,
+        });
 
-        return NextResponse.json({ success: true, status: 201, ...newLead, id: newLead._id, message: 'New lead created for new user.', }, { status: 201 });
+        return NextResponse.json({ success: true, status: 201, ...newLead, id: newLead.id, message: 'New lead created for new user.', }, { status: 201 });
 
     } catch (error: any) {
-        // console.log(error);
         if (error instanceof errors.E_VALIDATION_ERROR) {
             return NextResponse.json(
                 { success: false, status: error.status, message: error.messages },
                 { status: error.status }
             );
         }
+        return NextResponse.json({
+            success: false,
+            status: 500,
+            error: error.message || "Internal server error",
+        }, { status: 500 });
     }
 }
