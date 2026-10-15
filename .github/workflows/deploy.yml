@@ -1,0 +1,21 @@
+name: Deploy to Vercel (Production)
+
+on:
+  push:
+    branches: [main]
+  # Allows manual deploys from the Actions tab
+  workflow_dispatch: {}
+
+env:
+  VERCEL_ORG_ID: team_VY7O5vAa8vmu0lZPzu7rx1W2
+  VERCEL_PROJECT_ID: prj_xMg7bcfuXgNmCYSNwGY2PQ2ZVbPf
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Vercel (production)
+        run: npx vercel@52 --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
