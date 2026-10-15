@@ -30,7 +30,7 @@ const socialLinks = [
     { label: 'LinkedIn', href: 'https://linkedin.com', icon: IconBrandLinkedin },
     { label: 'X / Twitter', href: 'https://x.com', icon: IconBrandX },
     { label: 'Instagram', href: 'https://instagram.com', icon: IconBrandInstagram },
-    { label: 'Email', href: 'mailto:hello@techbyarun.com', icon: IconMail },
+    { label: 'Email', href: 'mailto:techbyarun@gmail.com', icon: IconMail },
 ];
 
 export default function AppFooter() {

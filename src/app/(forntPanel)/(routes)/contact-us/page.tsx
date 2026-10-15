@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { IconMail, IconBrandLinkedin, IconBrandGithub } from '@tabler/icons-react';
 
 const contactInfo = [
-    { icon: IconMail, label: 'Email', value: 'hello@techbyarun.com', href: 'mailto:hello@techbyarun.com' },
+    { icon: IconMail, label: 'Email', value: 'techbyarun@gmail.com', href: 'mailto:techbyarun@gmail.com' },
     { icon: IconBrandLinkedin, label: 'LinkedIn', value: 'linkedin.com/in/techbyarun', href: 'https://linkedin.com' },
     { icon: IconBrandGithub, label: 'GitHub', value: 'github.com/techbyarun', href: 'https://github.com' },
 ];

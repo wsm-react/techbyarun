@@ -71,7 +71,7 @@ export default async function CoffeeWithMePage() {
                 <div className="mx-auto max-w-4xl px-6 py-12 text-center">
                     <p className="text-sm text-muted-foreground">
                         Prefer writing? Reach out anytime at{' '}
-                        <a href="mailto:hello@techbyarun.com" className="text-primary hover:underline">hello@techbyarun.com</a>
+                        <a href="mailto:techbyarun@gmail.com" className="text-primary hover:underline">techbyarun@gmail.com</a>
                     </p>
                 </div>
             </section>
